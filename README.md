@@ -70,38 +70,25 @@ catch what reading can't (a manual follow-up).**
 
 ### What each tool checks
 
-**Security & compliance**
-- **brakeman** — reads your Rails code (without running it) and flags security holes:
-  SQL injection, XSS, unsafe redirects, and so on.
-- **bundler-audit** — checks your locked gem versions against a database of known
-  security advisories (CVEs).
-- **license_finder** — lists the license of every gem you depend on and flags any your
-  project hasn't approved — useful where licensing is regulated.
-
-**Data correctness** (Pass 2)
-- **active_record_doctor** — compares your database to your models and finds missing
-  foreign keys, indexes, `NOT NULL`, and unique constraints.
-
-**Performance**
-- **fasterer** — quick hints about slow Ruby idioms.
-- **bullet** (Pass 2) — watches the running app and flags N+1 queries.
-- **prosopite** (Pass 2) — a stricter N+1 detector; catches cases bullet misses.
-- **lol_dba** (Pass 2) — finds columns used in lookups that have no database index.
-
-**Maintainability**
-- **rubycritic** — gives the codebase one overall quality score (A–F). It runs the three
-  tools below and combines them:
-  - **reek** — names "code smells": over-long methods, vague names, classes doing too much.
-  - **flog** — scores how complex (and hard to test) each method is.
-  - **flay** — finds duplicated / copy-pasted code.
-- **rubocop** — the de-facto Ruby style and lint checker.
-- **rails_best_practices** — Rails-specific advice: fat controllers, logic that belongs
-  in models, Law of Demeter, etc.
-- **erb_lint** — lints your ERB view templates for style issues rubocop doesn't see.
-
-**Tech debt & coverage**
-- **bundle outdated** — lists gems that are behind their latest release.
-- **simplecov** (Pass 2) — measures how much of your code your test suite actually runs.
+| Category | Tool | What it checks |
+|----------|------|----------------|
+| Security | **brakeman** | Reads your Rails code (without running it) for security holes — SQL injection, XSS, unsafe redirects |
+| Security | **bundler-audit** | Your locked gem versions against a database of known security advisories (CVEs) |
+| Compliance | **license_finder** | The license of every gem; flags any the project hasn't approved |
+| Data correctness | **active_record_doctor** _(Pass 2)_ | DB vs. models — missing foreign keys, indexes, `NOT NULL`, unique constraints |
+| Performance | **fasterer** | Slow Ruby idioms (quick static hints) |
+| Performance | **bullet** _(Pass 2)_ | N+1 queries while the app runs |
+| Performance | **prosopite** _(Pass 2)_ | N+1 queries — stricter than bullet |
+| Performance | **lol_dba** _(Pass 2)_ | Lookup columns that have no database index |
+| Maintainability | **rubycritic** | Overall quality score (A–F); runs the three below and combines them |
+| Maintainability | ↳ **reek** | Code smells — long methods, vague names, classes doing too much |
+| Maintainability | ↳ **flog** | How complex / hard-to-test each method is |
+| Maintainability | ↳ **flay** | Duplicated / copy-pasted code |
+| Maintainability | **rubocop** | Ruby style & lint — the de-facto standard |
+| Maintainability | **rails_best_practices** | Rails-specific advice — fat controllers, logic that belongs in models, Law of Demeter |
+| Maintainability | **erb_lint** | ERB view template style that rubocop doesn't see |
+| Tech debt | **bundle outdated** | Gems behind their latest release |
+| Coverage | **simplecov** _(Pass 2)_ | How much of your code the test suite actually runs |
 
 ### How it differs from CI and from rubycritic
 

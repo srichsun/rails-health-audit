@@ -68,36 +68,25 @@ Finding 依「它威脅到什麼」排序，**而不是**依數量。一個 SQL 
 
 ### 每個工具在檢查什麼
 
-**安全與合規**
-- **brakeman** — 不執行、只「讀」你的 Rails 程式碼，挑出安全漏洞：SQL injection、
-  XSS、不安全的轉址等等。
-- **bundler-audit** — 拿你鎖定的 gem 版本，去比對一個已知安全漏洞（CVE）資料庫。
-- **license_finder** — 列出你所有依賴 gem 的授權條款，標出專案還沒核可的——
-  在重視授權合規的地方很有用。
-
-**資料正確性**（第二輪）
-- **active_record_doctor** — 拿你的資料庫跟 model 對照，找出缺的外鍵、索引、
-  `NOT NULL`、unique 約束。
-
-**效能**
-- **fasterer** — 快速指出寫得慢的 Ruby 寫法。
-- **bullet**（第二輪）— 在 app 跑的時候盯著，抓 N+1 查詢。
-- **prosopite**（第二輪）— 更嚴格的 N+1 偵測，抓得到 bullet 漏掉的。
-- **lol_dba**（第二輪）— 找出被拿來查詢、卻沒有資料庫索引的欄位。
-
-**可維護性**
-- **rubycritic** — 給整個 codebase 一個品質總分（A–F）。它底下跑下面三個再合起來：
-  - **reek** — 點名「壞味道」：方法太長、命名含糊、一個 class 管太多事。
-  - **flog** — 評每個方法有多複雜、多難測試。
-  - **flay** — 找複製貼上的重複碼。
-- **rubocop** — Ruby 風格與 lint 檢查的事實標準。
-- **rails_best_practices** — Rails 專屬建議：肥 controller、該放 model 的邏輯、
-  迪米特法則等。
-- **erb_lint** — 檢查 ERB view 樣板的排版問題（rubocop 看不到的部分）。
-
-**技術債與覆蓋率**
-- **bundle outdated** — 列出落後最新版的 gem。
-- **simplecov**（第二輪）— 量你的測試實際跑過多少比例的程式碼。
+| 類別 | 工具 | 檢查什麼 |
+|------|------|----------|
+| 安全 | **brakeman** | 不執行、只「讀」Rails 程式碼，挑安全漏洞——SQL injection、XSS、不安全的轉址 |
+| 安全 | **bundler-audit** | 拿你鎖定的 gem 版本去比對已知漏洞（CVE）資料庫 |
+| 合規 | **license_finder** | 列出每個 gem 的授權，標出專案還沒核可的 |
+| 資料正確性 | **active_record_doctor**（第二輪）| 資料庫 vs. model——缺的外鍵、索引、`NOT NULL`、unique 約束 |
+| 效能 | **fasterer** | 寫得慢的 Ruby 寫法（快速靜態提示）|
+| 效能 | **bullet**（第二輪）| app 跑起來時抓 N+1 查詢 |
+| 效能 | **prosopite**（第二輪）| N+1 查詢，比 bullet 更嚴格 |
+| 效能 | **lol_dba**（第二輪）| 被拿來查詢、卻沒有資料庫索引的欄位 |
+| 可維護性 | **rubycritic** | 品質總分（A–F）；底下跑下面三個再合起來 |
+| 可維護性 | ↳ **reek** | 壞味道——方法太長、命名含糊、一個 class 管太多事 |
+| 可維護性 | ↳ **flog** | 每個方法有多複雜、多難測試 |
+| 可維護性 | ↳ **flay** | 複製貼上的重複碼 |
+| 可維護性 | **rubocop** | Ruby 風格與 lint 的事實標準 |
+| 可維護性 | **rails_best_practices** | Rails 專屬建議——肥 controller、該放 model 的邏輯、迪米特法則 |
+| 可維護性 | **erb_lint** | ERB view 樣板的排版問題（rubocop 看不到的）|
+| 技術債 | **bundle outdated** | 落後最新版的 gem |
+| 覆蓋率 | **simplecov**（第二輪）| 你的測試實際跑過多少比例的程式碼 |
 
 ### 跟 CI、跟 rubycritic 差在哪
 
