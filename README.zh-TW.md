@@ -182,6 +182,32 @@ bash scripts/audit-dynamic.sh /path/to/rails/project
 
 ---
 
+## 📁 產出檔案在哪
+
+全部都產在 `<project>/tmp/health-audit/` 底下（git-ignored，是產物）。腳本跑完也會在
+終端機印出報告路徑。
+
+```
+<project>/tmp/health-audit/
+├── REPORT.md      # 靜態掃描：摘要表 + 排好序的 Action plan
+├── PASS2.md       # 動態掃描結果（只有跑過 audit-dynamic.sh 才有）
+└── raw/           # 每個工具的完整原始輸出——你排優先序時要看的細節
+    ├── brakeman.txt
+    ├── bundler-audit.txt
+    ├── license_finder.txt
+    ├── rubocop.txt
+    ├── rubycritic.txt
+    ├── fasterer.txt
+    ├── rails_best_practices.txt
+    ├── outdated.txt
+    ├── pass2_ar_doctor.txt     # 來自 audit-dynamic.sh
+    └── pass2_lol_dba.txt       # 來自 audit-dynamic.sh
+```
+
+`REPORT.md` 是你拿來讀、拿來行動的那份；`raw/` 是細節所在。
+
+---
+
 ## 🧪 用內附的範例試跑
 
 repo 內附一個極小、**故意寫壞**的 Rails app，讓你不必拿自己的 code，

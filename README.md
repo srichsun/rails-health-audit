@@ -192,6 +192,32 @@ bundle (your `Gemfile` is untouched), and writes `<project>/tmp/health-audit/PAS
 
 ---
 
+## 📁 Output
+
+Everything lands under `<project>/tmp/health-audit/` (git-ignored — it's generated). The
+scripts also print the report path to the terminal when they finish.
+
+```
+<project>/tmp/health-audit/
+├── REPORT.md      # static scan: summary table + the prioritized Action plan
+├── PASS2.md       # dynamic scan results (only if you ran audit-dynamic.sh)
+└── raw/           # full, unprocessed output from every tool — the detail you triage from
+    ├── brakeman.txt
+    ├── bundler-audit.txt
+    ├── license_finder.txt
+    ├── rubocop.txt
+    ├── rubycritic.txt
+    ├── fasterer.txt
+    ├── rails_best_practices.txt
+    ├── outdated.txt
+    ├── pass2_ar_doctor.txt     # from audit-dynamic.sh
+    └── pass2_lol_dba.txt       # from audit-dynamic.sh
+```
+
+`REPORT.md` is the one you read and act on; `raw/` is where the specifics live.
+
+---
+
 ## 🧪 Try it on the bundled example
 
 The repo ships a tiny, **intentionally broken** Rails app so you can see the
