@@ -84,7 +84,7 @@ Finding 依「它威脅到什麼」排序，**而不是**依數量。一個 SQL 
 | 可維護性 | ↳ [**flay**](https://github.com/seattlerb/flay) | 複製貼上的重複碼 |
 | 可維護性 | [**rubocop**](https://github.com/rubocop/rubocop) | Ruby 風格與 lint 的事實標準 |
 | 可維護性 | [**rails_best_practices**](https://github.com/flyerhzm/rails_best_practices) | Rails 專屬建議——肥 controller、該放 model 的邏輯、迪米特法則 |
-| 可維護性 | [**erb_lint**](https://github.com/Shopify/erb-lint) | ERB view 樣板的排版問題（rubocop 看不到的）|
+| 可維護性 | [**erb_lint**](https://github.com/Shopify/erb-lint) | ERB view 樣板——預設查排版一致性，另可開啟不安全輸出（XSS）檢查；rubocop 看不到 ERB |
 | 技術債 | [**bundle outdated**](https://bundler.io/man/bundle-outdated.1.html) | 落後最新版的 gem |
 | 覆蓋率 | [**simplecov**](https://github.com/simplecov-ruby/simplecov)（第二輪）| 你的測試實際跑過多少比例的程式碼 |
 

@@ -86,7 +86,7 @@ catch what reading can't (a manual follow-up).**
 | Maintainability | ↳ [**flay**](https://github.com/seattlerb/flay) | Duplicated / copy-pasted code |
 | Maintainability | [**rubocop**](https://github.com/rubocop/rubocop) | Ruby style & lint — the de-facto standard |
 | Maintainability | [**rails_best_practices**](https://github.com/flyerhzm/rails_best_practices) | Rails-specific advice — fat controllers, logic that belongs in models, Law of Demeter |
-| Maintainability | [**erb_lint**](https://github.com/Shopify/erb-lint) | ERB view template style that rubocop doesn't see |
+| Maintainability | [**erb_lint**](https://github.com/Shopify/erb-lint) | ERB view templates — formatting consistency by default, plus unsafe-output (XSS) checks if enabled; rubocop can't see ERB |
 | Tech debt | [**bundle outdated**](https://bundler.io/man/bundle-outdated.1.html) | Gems behind their latest release |
 | Coverage | [**simplecov**](https://github.com/simplecov-ruby/simplecov) _(Pass 2)_ | How much of your code the test suite actually runs |
 
