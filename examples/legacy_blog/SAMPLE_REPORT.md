@@ -1,5 +1,5 @@
 <!-- A committed snapshot of the report for examples/legacy_blog.
-     The summary/findings are produced by: bash scripts/audit.sh examples/legacy_blog
+     The summary/findings are produced by: bash scripts/audit-static.sh examples/legacy_blog
      The Action plan at the bottom is the triage step — written by reading the raw logs
      (by you, or by Claude when the skill runs inside Claude Code). -->
 

@@ -13,7 +13,7 @@ board.
 One command, a few minutes:
 
 ```sh
-bash scripts/audit.sh /path/to/app
+bash scripts/audit-static.sh /path/to/app
 ```
 
 | Rank | Category | Tool | Finding |

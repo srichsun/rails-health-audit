@@ -25,6 +25,6 @@ add a `.license_finder.yml` at the root — see the commented sample at
 Run the audit against it:
 
 ```sh
-bash ../../scripts/audit.sh .
+bash ../../scripts/audit-static.sh .
 cat tmp/health-audit/REPORT.md
 ```

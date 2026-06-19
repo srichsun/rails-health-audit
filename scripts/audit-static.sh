@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Rails Health Audit — Phase 1 static scan.
-# Usage: bash audit.sh /path/to/rails/project
+# Usage: bash audit-static.sh /path/to/rails/project
 # Orchestrates the canonical Ruby/Rails static-analysis tools, ranks findings
 # most-severe-first, and writes <project>/tmp/health-audit/REPORT.md.
 set -uo pipefail

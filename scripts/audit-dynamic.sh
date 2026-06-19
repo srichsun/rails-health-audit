@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Rails Health Audit — Pass 2 runtime checks.
-# Usage: bash pass2.sh /path/to/rails/project
+# Usage: bash audit-dynamic.sh /path/to/rails/project
 #
 # Unlike pass 1 (which only reads source), this BOOTS the app against its database,
 # so the project must already be set up: `bundle check` passes, the DB exists and is

@@ -44,7 +44,7 @@ reinvention of those tools.
 ### Phase 1 — static scan (works on any project, no app changes)
 
 ```
-bash ~/.claude/skills/rails-health-audit/scripts/audit.sh /path/to/rails/project
+bash ~/.claude/skills/rails-health-audit/scripts/audit-static.sh /path/to/rails/project
 ```
 
 This runs the tools that need only source + `Gemfile.lock`:
@@ -57,20 +57,20 @@ so nothing is permanently added to the target project.
 
 ### Phase 2 — runtime scan (needs the app booting + a DB)
 
-These need to load the app against its database. `scripts/pass2.sh <project>` automates
+These need to load the app against its database. `scripts/audit-dynamic.sh <project>` automates
 the first two through a **temporary** bundle (the project's `Gemfile` is never touched):
 
 - **Data correctness** — `active_record_doctor`: missing FKs, NOT NULL, unique indexes,
   model/DB mismatch.
 - **Missing indexes** — `lol_dba` (`db:find_indexes`).
 
-Only run `pass2.sh` when the project's DB is set up and migrated; it writes `PASS2.md`.
+Only run `audit-dynamic.sh` when the project's DB is set up and migrated; it writes `PASS2.md`.
 The N+1 (`bullet`/`prosopite`) and coverage (`simplecov`) checks need the app *exercised*
 (requests / test suite), so leave them as documented follow-ups.
 
 ## Turning the scan into a plan (do this — don't leave it blank)
 
-`audit.sh` only writes an empty Action plan template; the prioritization is the judgment
+`audit-static.sh` only writes an empty Action plan template; the prioritization is the judgment
 this skill exists for. **After running the scan, read the raw logs in
 `tmp/health-audit/raw/` and fill in the `## Action plan` section of `REPORT.md`** before
 reporting back. How to prioritize:

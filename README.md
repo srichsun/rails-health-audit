@@ -82,7 +82,7 @@ run against a real, migrated database:
 - Are there slow N+1 queries? (`bullet` / `prosopite`)
 - How much of the code do the tests actually cover? (`simplecov`)
 
-`scripts/pass2.sh` automates the first group: it boots the app and runs the
+`scripts/audit-dynamic.sh` automates the first group: it boots the app and runs the
 data-correctness and indexing detectors through a **temporary** bundle, so the project's
 own `Gemfile` / `Gemfile.lock` are never touched. The N+1 and coverage checks still need
 the app *exercised* (requests, or the test suite) — they only surface on code paths that
@@ -167,10 +167,10 @@ Or invoke it explicitly as a slash command:
 /rails-health-audit /path/to/rails/project
 ```
 
-**Standalone (no Claude Code).** Run the script directly:
+**Standalone — the static scan.** Run it directly (no Claude Code needed):
 
 ```sh
-bash scripts/audit.sh /path/to/rails/project
+bash scripts/audit-static.sh /path/to/rails/project
 ```
 
 Either way, it writes a ranked report to `<project>/tmp/health-audit/REPORT.md` and the
@@ -181,10 +181,10 @@ Then triage: read the raw logs, pick the top handful of highest-impact items, an
 in the report's **Action plan** section — one line each: `[Category] problem → fix →
 effort`. (Inside Claude Code this triage step can be done for you from the raw logs.)
 
-**Pass 2 (runtime).** On a project whose database is set up and migrated:
+**The dynamic scan (Pass 2).** On a project whose database is set up and migrated:
 
 ```sh
-bash scripts/pass2.sh /path/to/rails/project
+bash scripts/audit-dynamic.sh /path/to/rails/project
 ```
 
 It boots the app, runs the data-correctness and indexing detectors through a temporary
@@ -198,7 +198,7 @@ The repo ships a tiny, **intentionally broken** Rails app so you can see the
 audit light up without pointing it at your own code:
 
 ```sh
-bash scripts/audit.sh examples/legacy_blog
+bash scripts/audit-static.sh examples/legacy_blog
 cat examples/legacy_blog/tmp/health-audit/REPORT.md
 ```
 
@@ -214,7 +214,7 @@ A real-world walkthrough (a legacy Rails 4.1 app) is in
 
 ## ⚠️ Limitations
 
-- `pass2.sh` automates the data-correctness and indexing checks, but the N+1 and coverage
+- `audit-dynamic.sh` automates the data-correctness and indexing checks, but the N+1 and coverage
   checks still need the app *exercised* (requests / the test suite), so those stay manual.
 - `bundle outdated` needs the project's own Ruby; it is skipped with a note when the
   ambient Ruby does not match the project's pinned version.
