@@ -1,5 +1,7 @@
 # rails-health-audit
 
+**English** | [繁體中文](README.zh-TW.md)
+
 A repeatable way to assess the health of an existing Rails codebase and turn the
 result into a **prioritized action plan** — "find problem _X_ with tool _Y_, fix it
 with method _Z_", ordered most-severe-first.
