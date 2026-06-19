@@ -17,6 +17,11 @@ What is planted, by severity rank:
 | 4 | Maintainability | fat method, duplication, Law of Demeter | `posts_controller.rb`, `post.rb` |
 | 4 | Maintainability | sloppy ERB formatting (erb_lint) | `views/posts/_form.html.erb` |
 
+No license governance is set up here (like most neglected legacy apps), so
+`license_finder` flags every dependency as unapproved. To fix that in a real project,
+add a `.license_finder.yml` at the root — see the commented sample at
+[`docs/license_finder.sample.yml`](../../docs/license_finder.sample.yml).
+
 Run the audit against it:
 
 ```sh
