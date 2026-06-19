@@ -90,6 +90,9 @@ catch what reading can't (a manual follow-up).**
 | Tech debt | [**bundle outdated**](https://bundler.io/man/bundle-outdated.1.html) | Gems behind their latest release |
 | Coverage | [**simplecov**](https://github.com/simplecov-ruby/simplecov) _(Pass 2)_ | How much of your code the test suite actually runs |
 
+> Setting up license governance? See a commented sample config at
+> [`docs/license_finder.sample.yml`](docs/license_finder.sample.yml).
+
 ### How it differs from CI and from rubycritic
 
 - **vs. CI**: CI gates the _diff_ on every push — it stops _new_ problems. This audits

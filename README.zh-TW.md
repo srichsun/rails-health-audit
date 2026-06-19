@@ -88,6 +88,9 @@ Finding 依「它威脅到什麼」排序，**而不是**依數量。一個 SQL 
 | 技術債 | [**bundle outdated**](https://bundler.io/man/bundle-outdated.1.html) | 落後最新版的 gem |
 | 覆蓋率 | [**simplecov**](https://github.com/simplecov-ruby/simplecov)（第二輪）| 你的測試實際跑過多少比例的程式碼 |
 
+> 想建立授權合規治理？見一份附完整註解的範例設定
+> [`docs/license_finder.sample.yml`](docs/license_finder.sample.yml)。
+
 ### 跟 CI、跟 rubycritic 差在哪
 
 - **vs. CI**：CI 在每次 push 時把關**這次的 diff**——它擋住**新**問題。這個工具評估的是

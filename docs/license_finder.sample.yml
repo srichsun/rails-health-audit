@@ -1,0 +1,70 @@
+# Sample license-governance config for license_finder.
+#
+# This is an illustrative `.license_finder.yml`. In a real project it lives at the
+# repo root; license_finder reads it on every run (and in CI). It shows how a team
+# that cares about licensing — e.g. in finance/regulated industries — sets things up.
+#
+# The idea is NOT to approve gems one by one. You approve LICENSE TYPES in bulk,
+# block the dangerous ones, ignore dev/test gems, and handle the few odd cases
+# individually with a recorded reason (see the note at the bottom).
+
+# ---------------------------------------------------------------------------
+# 1. Licenses the company has decided are fine to use anywhere (permissive).
+#    Anything carrying one of these passes automatically.
+# ---------------------------------------------------------------------------
+permitted_licenses:
+  - MIT
+  - Apache-2.0
+  - BSD-2-Clause
+  - BSD-3-Clause
+  - ISC
+  - Ruby            # the Ruby license (many core/runtime gems use it)
+  - "Public Domain"
+
+# ---------------------------------------------------------------------------
+# 2. Licenses that are forbidden outright. A "copyleft" license like GPL/AGPL can
+#    legally force you to open-source your own application, so for closed/commercial
+#    products these are blocked. Any gem with one of these fails the audit.
+# ---------------------------------------------------------------------------
+restricted_licenses:
+  - GPL-2.0
+  - GPL-3.0
+  - AGPL-3.0
+  - LGPL-3.0        # linking nuances — block by default, approve case-by-case if legal OKs
+
+# ---------------------------------------------------------------------------
+# 3. Dependency groups that never ship to production, so their licenses don't
+#    matter for distribution. Skip them to cut noise.
+# ---------------------------------------------------------------------------
+ignore_groups:
+  - development
+  - test
+
+# ---------------------------------------------------------------------------
+# 4. Specific dependencies to ignore (e.g. your own internal/private gems that
+#    aren't third-party at all).
+# ---------------------------------------------------------------------------
+ignore_dependencies:
+  - my_company_internal_gem
+
+# Optional: where to look (handy in monorepos / multiple package managers).
+# project_paths:
+#   - ./
+
+# ---------------------------------------------------------------------------
+# Per-gem decisions (the audit trail) do NOT live here — they live in
+# `doc/dependency_decisions.yml`, recorded via the CLI so each carries a reason
+# and an owner. That file is the compliance paper trail. Examples:
+#
+#   # A gem whose gemspec omits its license, but upstream is clearly MIT:
+#   license_finder licenses add some_gem MIT \
+#     --why "Upstream LICENSE file is MIT; gemspec just doesn't declare it"
+#
+#   # A gem with an awkward license that legal reviewed and approved:
+#   license_finder approvals add weird_gem \
+#     --why "Legal reviewed TICKET-1234; dual-licensed, we use the MIT terms" \
+#     --who "legal@company.com"
+#
+# In CI, add a `license_finder` step: if anyone adds a gem whose license is neither
+# permitted nor individually approved, the build fails — forcing a human decision
+# instead of silently shipping a licensing risk.
