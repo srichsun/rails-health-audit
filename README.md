@@ -54,19 +54,22 @@ any codebase at any time, and it is fast. This pass covers security, licensing,
 maintainability, conventions, and tech debt. (Tools run from your installed binary, or
 are fetched on the fly with `gem exec` if you don't have them — Ruby 3.2+.)
 
-**Pass 2 — run the app (the script only _lists_ these; it does not run them).**
-Three things simply cannot be answered by reading code — you have to actually run the
-app against a real database:
+**Pass 2 — run the app.** Three things can't be answered by reading code; the app has to
+run against a real, migrated database:
 
-- Is the data safe? — missing foreign keys / indexes (`active_record_doctor`)
-- Are there slow N+1 queries? (`bullet`)
+- Is the data safe? — missing foreign keys, indexes, `NOT NULL`, unique constraints
+  (`active_record_doctor`, `lol_dba`)
+- Are there slow N+1 queries? (`bullet` / `prosopite`)
 - How much of the code do the tests actually cover? (`simplecov`)
 
-Running these means temporarily adding a gem or two and booting the app, so the audit
-doesn't do it automatically — it writes them into the report as clear next steps.
+`scripts/pass2.sh` automates the first group: it boots the app and runs the
+data-correctness and indexing detectors through a **temporary** bundle, so the project's
+own `Gemfile` / `Gemfile.lock` are never touched. The N+1 and coverage checks still need
+the app *exercised* (requests, or the test suite) — they only surface on code paths that
+actually execute — so they stay documented follow-ups.
 
-In one line: **Pass 1 reads the code (automatic, safe, fast); Pass 2 runs the app to
-catch what reading can't (a manual follow-up).**
+In one line: **Pass 1 reads the code (always safe to run); Pass 2 boots the app to catch
+what reading can't (needs the DB set up).**
 
 ### What each tool checks
 
@@ -102,6 +105,26 @@ catch what reading can't (a manual follow-up).**
 - **vs. rubycritic / rails_code_auditor**: those run tools and report metrics. This adds
   the severity ranking, the runtime phase those static bundles skip, and the step that
   turns raw output into a prioritized plan.
+
+---
+
+## When to use it — and when not to
+
+**A good fit when:**
+- You're inheriting or onboarding a codebase you didn't write and need a map of its weak
+  spots fast.
+- The project is legacy with no CI, or only partial CI.
+- You're planning a refactor / cleanup and need a prioritized backlog, not a pass/fail gate.
+- You're assessing a system one-off — due diligence, or a team taking over someone else's app.
+- You want the runtime data-correctness / N+1 checks that most CI pipelines don't run.
+
+**Not the right tool when:**
+- The project already has mature CI running these checks on every PR — re-running the
+  static ones adds little.
+- You want a merge gate: that's CI's job (gate the diff). This produces a report to
+  prioritize from, not a build pass/fail.
+- You expect it to replace CI. It's a periodic assessment, not continuous enforcement —
+  the two are complementary: this finds the backlog, CI keeps it from coming back.
 
 ---
 
@@ -158,6 +181,15 @@ Then triage: read the raw logs, pick the top handful of highest-impact items, an
 in the report's **Action plan** section — one line each: `[Category] problem → fix →
 effort`. (Inside Claude Code this triage step can be done for you from the raw logs.)
 
+**Pass 2 (runtime).** On a project whose database is set up and migrated:
+
+```sh
+bash scripts/pass2.sh /path/to/rails/project
+```
+
+It boots the app, runs the data-correctness and indexing detectors through a temporary
+bundle (your `Gemfile` is untouched), and writes `<project>/tmp/health-audit/PASS2.md`.
+
 ---
 
 ## Try it on the bundled example
@@ -182,8 +214,8 @@ A real-world walkthrough (a legacy Rails 4.1 app) is in
 
 ## Limitations
 
-- Phase 1 is static only. The runtime checks (rank 2, and the N+1 part of rank 3) are
-  documented, not executed.
+- `pass2.sh` automates the data-correctness and indexing checks, but the N+1 and coverage
+  checks still need the app *exercised* (requests / the test suite), so those stay manual.
 - `bundle outdated` needs the project's own Ruby; it is skipped with a note when the
   ambient Ruby does not match the project's pinned version.
 - The audit assesses and plans. It never edits your code — that decision stays human.
