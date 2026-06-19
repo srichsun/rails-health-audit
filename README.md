@@ -75,7 +75,7 @@ catch what reading can't (a manual follow-up).**
 | Security | [**brakeman**](https://github.com/presidentbeef/brakeman) | Reads your Rails code (without running it) for security holes — SQL injection, XSS, unsafe redirects |
 | Security | [**bundler-audit**](https://github.com/rubysec/bundler-audit) | Your locked gem versions against a database of known security advisories (CVEs) |
 | Compliance | [**license_finder**](https://github.com/pivotal/LicenseFinder) | The license of every gem; flags any the project hasn't approved |
-| Data correctness | [**active_record_doctor**](https://github.com/gregnavis/active_record_doctor) _(Pass 2)_ | DB vs. models — missing foreign keys, indexes, `NOT NULL`, unique constraints |
+| Data correctness | [**active_record_doctor**](https://github.com/gregnavis/active_record_doctor) _(Pass 2)_ | Whether the database actually enforces what your models assume — missing foreign keys, indexes, `NOT NULL`, unique constraints |
 | Performance | [**fasterer**](https://github.com/DamirSvrtan/fasterer) | Slow Ruby idioms (quick static hints) |
 | Performance | [**bullet**](https://github.com/flyerhzm/bullet) _(Pass 2)_ | N+1 queries while the app runs |
 | Performance | [**prosopite**](https://github.com/charkost/prosopite) _(Pass 2)_ | N+1 queries — stricter than bullet |

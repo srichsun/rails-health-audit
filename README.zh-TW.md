@@ -73,7 +73,7 @@ Finding 依「它威脅到什麼」排序，**而不是**依數量。一個 SQL 
 | 安全 | [**brakeman**](https://github.com/presidentbeef/brakeman) | 不執行、只「讀」Rails 程式碼，挑安全漏洞——SQL injection、XSS、不安全的轉址 |
 | 安全 | [**bundler-audit**](https://github.com/rubysec/bundler-audit) | 拿你鎖定的 gem 版本去比對已知漏洞（CVE）資料庫 |
 | 合規 | [**license_finder**](https://github.com/pivotal/LicenseFinder) | 列出每個 gem 的授權，標出專案還沒核可的 |
-| 資料正確性 | [**active_record_doctor**](https://github.com/gregnavis/active_record_doctor)（第二輪）| 資料庫 vs. model——缺的外鍵、索引、`NOT NULL`、unique 約束 |
+| 資料正確性 | [**active_record_doctor**](https://github.com/gregnavis/active_record_doctor)（第二輪）| 資料庫有沒有真的撐住 model 假設的限制——缺的外鍵、索引、`NOT NULL`、unique 約束 |
 | 效能 | [**fasterer**](https://github.com/DamirSvrtan/fasterer) | 寫得慢的 Ruby 寫法（快速靜態提示）|
 | 效能 | [**bullet**](https://github.com/flyerhzm/bullet)（第二輪）| app 跑起來時抓 N+1 查詢 |
 | 效能 | [**prosopite**](https://github.com/charkost/prosopite)（第二輪）| N+1 查詢，比 bullet 更嚴格 |
