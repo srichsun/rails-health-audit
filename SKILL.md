@@ -57,32 +57,36 @@ so nothing is permanently added to the target project.
 
 ### Phase 2 — runtime scan (needs the app booting + a DB)
 
-These three need to load the app, so they require temporarily adding gems to the
-target project's `Gemfile` (`:development` group) and running there:
+These need to load the app against its database. `scripts/pass2.sh <project>` automates
+the first two through a **temporary** bundle (the project's `Gemfile` is never touched):
 
-- **Data correctness** — `active_record_doctor`: add gem, run
-  `bundle exec rake active_record_doctor`. Flags missing FKs, missing NOT NULL,
-  missing unique indexes, model/DB mismatch.
-- **Missing indexes** — `lol_dba`: `bundle exec rake db:find_indexes`.
-- **N+1 queries** — `bullet` (in test/dev) or `prosopite`: enable, exercise the app
-  or run the test suite, collect warnings.
+- **Data correctness** — `active_record_doctor`: missing FKs, NOT NULL, unique indexes,
+  model/DB mismatch.
+- **Missing indexes** — `lol_dba` (`db:find_indexes`).
 
-Document each as a follow-up item in the report rather than auto-installing.
+Only run `pass2.sh` when the project's DB is set up and migrated; it writes `PASS2.md`.
+The N+1 (`bullet`/`prosopite`) and coverage (`simplecov`) checks need the app *exercised*
+(requests / test suite), so leave them as documented follow-ups.
 
-## Turning the scan into a plan
+## Turning the scan into a plan (do this — don't leave it blank)
 
-After the scan, write the action plan in `REPORT.md` in this shape, severity-first:
+`audit.sh` only writes an empty Action plan template; the prioritization is the judgment
+this skill exists for. **After running the scan, read the raw logs in
+`tmp/health-audit/raw/` and fill in the `## Action plan` section of `REPORT.md`** before
+reporting back. How to prioritize:
 
-```
-## Action plan (most severe first)
-1. [Security] <N> brakeman warnings → review high-confidence ones, patch.
-2. [Data] add FK on orders.user_id (active_record_doctor) → migration.
-3. [Perf] N+1 on Order#line_items in checkout → includes(:line_items).
-...
-```
+1. **Business impact over volume** — order security → data correctness → performance →
+   maintainability → style. A SQL injection outranks 9,000 style offenses.
+2. **Cut noise with confidence/criticality** — e.g. fix brakeman's *High*-confidence
+   warnings first; triage bundler-audit's *Critical*/*High*, not every advisory.
+3. **Find the one fix that clears a column** — many advisories often collapse into a
+   single root-cause move (e.g. upgrading an EOL Rails). Call it out explicitly.
+4. **Sequence by risk** — risky changes (a major upgrade) go behind a safety net (green
+   tests in CI) first.
 
-Each item = **problem (found by tool) → concrete fix → rough effort**. Keep it to the
-top ~10 so it is actionable, not a dump.
+Write each item as **[Category] problem (found by tool) → concrete fix → rough effort
+(S/M/L)**. Keep it to the top ~6–10 so it is actionable, not a dump. See
+`examples/legacy_blog/SAMPLE_REPORT.md` for a worked example.
 
 ## Notes
 
