@@ -134,17 +134,35 @@ git clone https://github.com/srichsun/rails-health-audit
 
 Requirements: Ruby 3.2+ (for `gem exec`). The analysis tools are fetched on demand.
 
+> **Why `gem exec`?** It runs each tool without permanently installing it. So you don't
+> have to `gem install` nine tools up front, and nothing is added to your system gems or
+> to the project's `Gemfile` — the audit stays self-contained and leaves no trace.
+> `gem exec` ships with the RubyGems bundled in Ruby 3.2+, which is why that's the floor.
+
 ---
 
 ## Usage
+
+**With Claude Code (easiest).** Just ask in plain language — Claude picks up the skill,
+runs the scan, and does the triage for you:
+
+> "Audit this Rails project's health"
+
+Or invoke it explicitly as a slash command:
+
+```
+/rails-health-audit /path/to/rails/project
+```
+
+**Standalone (no Claude Code).** Run the script directly:
 
 ```sh
 bash scripts/audit.sh /path/to/rails/project
 ```
 
-This writes a ranked report to `<project>/tmp/health-audit/REPORT.md` and the full,
-unprocessed tool output to `<project>/tmp/health-audit/raw/`. The summary is printed to
-the terminal.
+Either way, it writes a ranked report to `<project>/tmp/health-audit/REPORT.md` and the
+full, unprocessed tool output to `<project>/tmp/health-audit/raw/`. The summary is
+printed to the terminal.
 
 Then triage: read the raw logs, pick the top handful of highest-impact items, and fill
 in the report's **Action plan** section — one line each: `[Category] problem → fix →

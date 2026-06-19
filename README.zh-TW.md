@@ -128,16 +128,34 @@ git clone https://github.com/srichsun/rails-health-audit
 
 需求：Ruby 3.2+（為了 `gem exec`）。分析工具會在需要時自動抓取。
 
+> **為什麼用 `gem exec`？** 它能「借來跑」每個工具、但不永久安裝。所以你不必事先
+> `gem install` 九個工具，也不會在你的系統 gem 或專案的 `Gemfile` 裡留下任何東西——
+> 整個 audit 自給自足、跑完不留痕跡、不污染環境。`gem exec` 是 Ruby 3.2+ 內建
+> RubyGems 才有的功能，這也是最低版本要 3.2 的原因。
+
 ---
 
 ## 使用方式
+
+**在 Claude Code 裡（最簡單）。** 直接用白話講，Claude 會自動拿出這個 skill、
+跑掃描、還幫你做分流：
+
+> 「幫我檢查這個 Rails 專案的健康度」
+
+或用斜線指令明確叫它：
+
+```
+/rails-health-audit /path/to/rails/project
+```
+
+**獨立使用（沒有 Claude Code）。** 直接跑腳本：
 
 ```sh
 bash scripts/audit.sh /path/to/rails/project
 ```
 
-它會把排序後的報告寫到 `<project>/tmp/health-audit/REPORT.md`，並把每個工具的
-完整原始輸出寫到 `<project>/tmp/health-audit/raw/`。摘要會印在終端機。
+不管哪種方式，它都會把排序後的報告寫到 `<project>/tmp/health-audit/REPORT.md`，
+並把每個工具的完整原始輸出寫到 `<project>/tmp/health-audit/raw/`。摘要會印在終端機。
 
 接著做分流（triage）：讀那些 raw log、挑出影響最大的前幾項，把報告裡的
 **Action plan** 區塊填好——每行一條：`[類別] 問題 → 修法 → 工時`。
