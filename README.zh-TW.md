@@ -139,7 +139,7 @@ git clone https://github.com/srichsun/rails-health-audit
 需求：Ruby 3.2+（為了 `gem exec`）。分析工具會在需要時自動抓取。
 
 > **為什麼用 `gem exec`？** 它能「借來跑」每個工具、但不永久安裝。所以你不必事先
-> `gem install` 九個工具，也不會在你的系統 gem 或專案的 `Gemfile` 裡留下任何東西——
+> `gem install` 這一整套工具，也不會在你的系統 gem 或專案的 `Gemfile` 裡留下任何東西——
 > 整個 audit 自給自足、跑完不留痕跡、不污染環境。`gem exec` 是 Ruby 3.2+ 內建
 > RubyGems 才有的功能，這也是最低版本要 3.2 的原因。
 
@@ -205,6 +205,9 @@ bash scripts/audit-dynamic.sh /path/to/rails/project
 ```
 
 `REPORT.md` 是你拿來讀、拿來行動的那份；`raw/` 是細節所在。
+
+想要可分享的檔案？`bash scripts/export.sh <project> both` 會把 `REPORT.md` / `PASS2.md`
+轉成 HTML + PDF（選用——markdown 仍是來源）。
 
 ---
 

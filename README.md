@@ -148,8 +148,8 @@ git clone https://github.com/srichsun/rails-health-audit
 Requirements: Ruby 3.2+ (for `gem exec`). The analysis tools are fetched on demand.
 
 > **Why `gem exec`?** It runs each tool without permanently installing it. So you don't
-> have to `gem install` nine tools up front, and nothing is added to your system gems or
-> to the project's `Gemfile` — the audit stays self-contained and leaves no trace.
+> have to `gem install` all these tools up front, and nothing is added to your system gems
+> or to the project's `Gemfile` — the audit stays self-contained and leaves no trace.
 > `gem exec` ships with the RubyGems bundled in Ruby 3.2+, which is why that's the floor.
 
 ---
@@ -215,6 +215,9 @@ scripts also print the report path to the terminal when they finish.
 ```
 
 `REPORT.md` is the one you read and act on; `raw/` is where the specifics live.
+
+Want a shareable copy? `bash scripts/export.sh <project> both` renders `REPORT.md` /
+`PASS2.md` to HTML + PDF (optional — markdown stays the source of truth).
 
 ---
 
