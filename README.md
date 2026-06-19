@@ -72,23 +72,23 @@ catch what reading can't (a manual follow-up).**
 
 | Category | Tool | What it checks |
 |----------|------|----------------|
-| Security | **brakeman** | Reads your Rails code (without running it) for security holes — SQL injection, XSS, unsafe redirects |
-| Security | **bundler-audit** | Your locked gem versions against a database of known security advisories (CVEs) |
-| Compliance | **license_finder** | The license of every gem; flags any the project hasn't approved |
-| Data correctness | **active_record_doctor** _(Pass 2)_ | DB vs. models — missing foreign keys, indexes, `NOT NULL`, unique constraints |
-| Performance | **fasterer** | Slow Ruby idioms (quick static hints) |
-| Performance | **bullet** _(Pass 2)_ | N+1 queries while the app runs |
-| Performance | **prosopite** _(Pass 2)_ | N+1 queries — stricter than bullet |
-| Performance | **lol_dba** _(Pass 2)_ | Lookup columns that have no database index |
-| Maintainability | **rubycritic** | Overall quality score (A–F); runs the three below and combines them |
-| Maintainability | ↳ **reek** | Code smells — long methods, vague names, classes doing too much |
-| Maintainability | ↳ **flog** | How complex / hard-to-test each method is |
-| Maintainability | ↳ **flay** | Duplicated / copy-pasted code |
-| Maintainability | **rubocop** | Ruby style & lint — the de-facto standard |
-| Maintainability | **rails_best_practices** | Rails-specific advice — fat controllers, logic that belongs in models, Law of Demeter |
-| Maintainability | **erb_lint** | ERB view template style that rubocop doesn't see |
-| Tech debt | **bundle outdated** | Gems behind their latest release |
-| Coverage | **simplecov** _(Pass 2)_ | How much of your code the test suite actually runs |
+| Security | [**brakeman**](https://github.com/presidentbeef/brakeman) | Reads your Rails code (without running it) for security holes — SQL injection, XSS, unsafe redirects |
+| Security | [**bundler-audit**](https://github.com/rubysec/bundler-audit) | Your locked gem versions against a database of known security advisories (CVEs) |
+| Compliance | [**license_finder**](https://github.com/pivotal/LicenseFinder) | The license of every gem; flags any the project hasn't approved |
+| Data correctness | [**active_record_doctor**](https://github.com/gregnavis/active_record_doctor) _(Pass 2)_ | DB vs. models — missing foreign keys, indexes, `NOT NULL`, unique constraints |
+| Performance | [**fasterer**](https://github.com/DamirSvrtan/fasterer) | Slow Ruby idioms (quick static hints) |
+| Performance | [**bullet**](https://github.com/flyerhzm/bullet) _(Pass 2)_ | N+1 queries while the app runs |
+| Performance | [**prosopite**](https://github.com/charkost/prosopite) _(Pass 2)_ | N+1 queries — stricter than bullet |
+| Performance | [**lol_dba**](https://github.com/plentz/lol_dba) _(Pass 2)_ | Lookup columns that have no database index |
+| Maintainability | [**rubycritic**](https://github.com/whitesmith/rubycritic) | Overall quality score (A–F); runs the three below and combines them |
+| Maintainability | ↳ [**reek**](https://github.com/troessner/reek) | Code smells — long methods, vague names, classes doing too much |
+| Maintainability | ↳ [**flog**](https://github.com/seattlerb/flog) | How complex / hard-to-test each method is |
+| Maintainability | ↳ [**flay**](https://github.com/seattlerb/flay) | Duplicated / copy-pasted code |
+| Maintainability | [**rubocop**](https://github.com/rubocop/rubocop) | Ruby style & lint — the de-facto standard |
+| Maintainability | [**rails_best_practices**](https://github.com/flyerhzm/rails_best_practices) | Rails-specific advice — fat controllers, logic that belongs in models, Law of Demeter |
+| Maintainability | [**erb_lint**](https://github.com/Shopify/erb-lint) | ERB view template style that rubocop doesn't see |
+| Tech debt | [**bundle outdated**](https://bundler.io/man/bundle-outdated.1.html) | Gems behind their latest release |
+| Coverage | [**simplecov**](https://github.com/simplecov-ruby/simplecov) _(Pass 2)_ | How much of your code the test suite actually runs |
 
 ### How it differs from CI and from rubycritic
 

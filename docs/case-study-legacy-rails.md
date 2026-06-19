@@ -1,5 +1,7 @@
 # Case study: auditing a legacy Rails 4.1 app
 
+**English** | [繁體中文](case-study-legacy-rails.zh-TW.md)
+
 I pointed `rails-health-audit` at a real legacy codebase — a Rails **4.1** / Ruby
 **2.3.5** application, ~24k lines across 433 files, 101 gems. Rails 4.1 has been
 end-of-life for years, so I expected it to be unhealthy. The interesting part was never

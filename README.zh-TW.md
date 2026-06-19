@@ -70,23 +70,23 @@ Finding 依「它威脅到什麼」排序，**而不是**依數量。一個 SQL 
 
 | 類別 | 工具 | 檢查什麼 |
 |------|------|----------|
-| 安全 | **brakeman** | 不執行、只「讀」Rails 程式碼，挑安全漏洞——SQL injection、XSS、不安全的轉址 |
-| 安全 | **bundler-audit** | 拿你鎖定的 gem 版本去比對已知漏洞（CVE）資料庫 |
-| 合規 | **license_finder** | 列出每個 gem 的授權，標出專案還沒核可的 |
-| 資料正確性 | **active_record_doctor**（第二輪）| 資料庫 vs. model——缺的外鍵、索引、`NOT NULL`、unique 約束 |
-| 效能 | **fasterer** | 寫得慢的 Ruby 寫法（快速靜態提示）|
-| 效能 | **bullet**（第二輪）| app 跑起來時抓 N+1 查詢 |
-| 效能 | **prosopite**（第二輪）| N+1 查詢，比 bullet 更嚴格 |
-| 效能 | **lol_dba**（第二輪）| 被拿來查詢、卻沒有資料庫索引的欄位 |
-| 可維護性 | **rubycritic** | 品質總分（A–F）；底下跑下面三個再合起來 |
-| 可維護性 | ↳ **reek** | 壞味道——方法太長、命名含糊、一個 class 管太多事 |
-| 可維護性 | ↳ **flog** | 每個方法有多複雜、多難測試 |
-| 可維護性 | ↳ **flay** | 複製貼上的重複碼 |
-| 可維護性 | **rubocop** | Ruby 風格與 lint 的事實標準 |
-| 可維護性 | **rails_best_practices** | Rails 專屬建議——肥 controller、該放 model 的邏輯、迪米特法則 |
-| 可維護性 | **erb_lint** | ERB view 樣板的排版問題（rubocop 看不到的）|
-| 技術債 | **bundle outdated** | 落後最新版的 gem |
-| 覆蓋率 | **simplecov**（第二輪）| 你的測試實際跑過多少比例的程式碼 |
+| 安全 | [**brakeman**](https://github.com/presidentbeef/brakeman) | 不執行、只「讀」Rails 程式碼，挑安全漏洞——SQL injection、XSS、不安全的轉址 |
+| 安全 | [**bundler-audit**](https://github.com/rubysec/bundler-audit) | 拿你鎖定的 gem 版本去比對已知漏洞（CVE）資料庫 |
+| 合規 | [**license_finder**](https://github.com/pivotal/LicenseFinder) | 列出每個 gem 的授權，標出專案還沒核可的 |
+| 資料正確性 | [**active_record_doctor**](https://github.com/gregnavis/active_record_doctor)（第二輪）| 資料庫 vs. model——缺的外鍵、索引、`NOT NULL`、unique 約束 |
+| 效能 | [**fasterer**](https://github.com/DamirSvrtan/fasterer) | 寫得慢的 Ruby 寫法（快速靜態提示）|
+| 效能 | [**bullet**](https://github.com/flyerhzm/bullet)（第二輪）| app 跑起來時抓 N+1 查詢 |
+| 效能 | [**prosopite**](https://github.com/charkost/prosopite)（第二輪）| N+1 查詢，比 bullet 更嚴格 |
+| 效能 | [**lol_dba**](https://github.com/plentz/lol_dba)（第二輪）| 被拿來查詢、卻沒有資料庫索引的欄位 |
+| 可維護性 | [**rubycritic**](https://github.com/whitesmith/rubycritic) | 品質總分（A–F）；底下跑下面三個再合起來 |
+| 可維護性 | ↳ [**reek**](https://github.com/troessner/reek) | 壞味道——方法太長、命名含糊、一個 class 管太多事 |
+| 可維護性 | ↳ [**flog**](https://github.com/seattlerb/flog) | 每個方法有多複雜、多難測試 |
+| 可維護性 | ↳ [**flay**](https://github.com/seattlerb/flay) | 複製貼上的重複碼 |
+| 可維護性 | [**rubocop**](https://github.com/rubocop/rubocop) | Ruby 風格與 lint 的事實標準 |
+| 可維護性 | [**rails_best_practices**](https://github.com/flyerhzm/rails_best_practices) | Rails 專屬建議——肥 controller、該放 model 的邏輯、迪米特法則 |
+| 可維護性 | [**erb_lint**](https://github.com/Shopify/erb-lint) | ERB view 樣板的排版問題（rubocop 看不到的）|
+| 技術債 | [**bundle outdated**](https://bundler.io/man/bundle-outdated.1.html) | 落後最新版的 gem |
+| 覆蓋率 | [**simplecov**](https://github.com/simplecov-ruby/simplecov)（第二輪）| 你的測試實際跑過多少比例的程式碼 |
 
 ### 跟 CI、跟 rubycritic 差在哪
 
@@ -127,7 +127,7 @@ git clone https://github.com/srichsun/rails-health-audit
 ## 使用方式
 
 **在 Claude Code 裡（最簡單）。** 直接用白話講，Claude 會自動拿出這個 skill、
-跑掃描、還幫你做分流：
+跑掃描、還幫你排優先序：
 
 > 「幫我檢查這個 Rails 專案的健康度」
 
@@ -146,9 +146,9 @@ bash scripts/audit.sh /path/to/rails/project
 不管哪種方式，它都會把排序後的報告寫到 `<project>/tmp/health-audit/REPORT.md`，
 並把每個工具的完整原始輸出寫到 `<project>/tmp/health-audit/raw/`。摘要會印在終端機。
 
-接著做分流（triage）：讀那些 raw log、挑出影響最大的前幾項，把報告裡的
+接著排優先序（triage）：讀那些 raw log、挑出影響最大的前幾項，把報告裡的
 **Action plan** 區塊填好——每行一條：`[類別] 問題 → 修法 → 工時`。
-（在 Claude Code 裡，這個分流步驟可以直接從 raw log 幫你完成。）
+（在 Claude Code 裡，這個排優先序的步驟可以直接從 raw log 幫你完成。）
 
 ---
 
@@ -167,8 +167,8 @@ cat examples/legacy_blog/tmp/health-audit/REPORT.md
 或者不用跑，直接看已提交的輸出快照
 [`examples/legacy_blog/SAMPLE_REPORT.md`](examples/legacy_blog/SAMPLE_REPORT.md)。
 
-一個真實世界的走查（一個 legacy Rails 4.1 app）在
-[`docs/case-study-legacy-rails.md`](docs/case-study-legacy-rails.md)。
+一份真實案例的完整解說（一個 legacy Rails 4.1 app）在
+[`docs/case-study-legacy-rails.zh-TW.md`](docs/case-study-legacy-rails.zh-TW.md)。
 
 ---
 
