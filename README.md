@@ -172,7 +172,7 @@ effort`. (Inside Claude Code this triage step can be done for you from the raw l
 
 ## Try it on the bundled example
 
-The repo ships a tiny, **intentionally broken** Rails-shaped app so you can see the
+The repo ships a tiny, **intentionally broken** Rails app so you can see the
 audit light up without pointing it at your own code:
 
 ```sh
@@ -181,7 +181,9 @@ cat examples/legacy_blog/tmp/health-audit/REPORT.md
 ```
 
 See [`examples/legacy_blog/README.md`](examples/legacy_blog/README.md) for the list of
-problems planted in it.
+problems planted in it, or read the committed output snapshot at
+[`examples/legacy_blog/SAMPLE_REPORT.md`](examples/legacy_blog/SAMPLE_REPORT.md) without
+running anything.
 
 A real-world walkthrough (a legacy Rails 4.1 app) is in
 [`docs/case-study-legacy-rails.md`](docs/case-study-legacy-rails.md).

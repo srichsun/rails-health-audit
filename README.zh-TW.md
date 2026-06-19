@@ -165,7 +165,7 @@ bash scripts/audit.sh /path/to/rails/project
 
 ## 用內附的範例試跑
 
-repo 內附一個極小、**故意寫壞**、長得像 Rails 的 app，讓你不必拿自己的 code，
+repo 內附一個極小、**故意寫壞**的 Rails app，讓你不必拿自己的 code，
 就能看到 audit 亮起來：
 
 ```sh
@@ -174,7 +174,9 @@ cat examples/legacy_blog/tmp/health-audit/REPORT.md
 ```
 
 範例裡植入了哪些問題，見
-[`examples/legacy_blog/README.md`](examples/legacy_blog/README.md)。
+[`examples/legacy_blog/README.md`](examples/legacy_blog/README.md)；
+或者不用跑，直接看已提交的輸出快照
+[`examples/legacy_blog/SAMPLE_REPORT.md`](examples/legacy_blog/SAMPLE_REPORT.md)。
 
 一個真實世界的走查（一個 legacy Rails 4.1 app）在
 [`docs/case-study-legacy-rails.md`](docs/case-study-legacy-rails.md)。

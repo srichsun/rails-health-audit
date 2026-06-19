@@ -1,7 +1,7 @@
 # legacy_blog — intentionally unhealthy sample app
 
-This is **not** a real application. It is a tiny, deliberately broken Rails-shaped
-codebase used to demonstrate `rails-health-audit`. Every file contains planted
+This is **not** a real application. It is a tiny, deliberately broken Rails app
+used to demonstrate `rails-health-audit`. Every file contains planted
 problems so the audit has something to find.
 
 What is planted, by severity rank:
