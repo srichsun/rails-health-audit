@@ -120,7 +120,7 @@ catch what reading can't (a manual follow-up).**
 As a Claude Code skill:
 
 ```sh
-git clone https://github.com/<you>/rails-health-audit ~/.claude/skills/rails-health-audit
+git clone https://github.com/srichsun/rails-health-audit ~/.claude/skills/rails-health-audit
 ```
 
 Claude Code picks it up automatically. You can then ask Claude to "audit this Rails
@@ -129,7 +129,7 @@ project's health", or run the script directly (below).
 Standalone (no Claude Code needed):
 
 ```sh
-git clone https://github.com/<you>/rails-health-audit
+git clone https://github.com/srichsun/rails-health-audit
 ```
 
 Requirements: Ruby 3.2+ (for `gem exec`). The analysis tools are fetched on demand.

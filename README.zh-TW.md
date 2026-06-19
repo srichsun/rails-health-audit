@@ -114,7 +114,7 @@ Finding 依「它威脅到什麼」排序，**而不是**依數量。一個 SQL 
 當成 Claude Code skill：
 
 ```sh
-git clone https://github.com/<you>/rails-health-audit ~/.claude/skills/rails-health-audit
+git clone https://github.com/srichsun/rails-health-audit ~/.claude/skills/rails-health-audit
 ```
 
 Claude Code 會自動偵測。接著你可以請 Claude「audit 這個 Rails 專案的健康度」，
@@ -123,7 +123,7 @@ Claude Code 會自動偵測。接著你可以請 Claude「audit 這個 Rails 專
 獨立使用（不需要 Claude Code）：
 
 ```sh
-git clone https://github.com/<you>/rails-health-audit
+git clone https://github.com/srichsun/rails-health-audit
 ```
 
 需求：Ruby 3.2+（為了 `gem exec`）。分析工具會在需要時自動抓取。
