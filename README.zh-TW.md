@@ -36,21 +36,68 @@ Finding 依「它威脅到什麼」排序，**而不是**依數量。一個 SQL 
 | 順位 | 類別 | 威脅到什麼 | 工具（_Y_）| 典型修法（_Z_）|
 |------|------|-----------|-----------|----------------|
 | 1 | 安全 | 入侵、資料外洩 | `brakeman`、`bundler-audit` | 修補、升級、淨化輸入 |
-| 2 | 資料正確性 | 髒資料、資料毀損 | `active_record_doctor`（runtime）| 加 FK / NOT NULL / unique index |
-| 3 | 效能 | 變慢、高負載下當機 | `fasterer`（靜態）；`bullet` / `prosopite`、`lol_dba`（runtime）| eager load、加 index、快取 |
-| 4 | 可維護性 | 改動慢、改動有風險 | `rubycritic`（reek + flay + flog）、`rubocop`、`rails_best_practices` | 抽 service / concern、拆方法 |
+| 1 | 授權合規 | 法律 / 授權風險 | `license_finder` | 核可或換掉該 gem |
+| 2 | 資料正確性 | 髒資料、資料毀損 | `active_record_doctor`（深掃）| 加 FK / NOT NULL / unique index |
+| 3 | 效能 | 變慢、高負載下當機 | `fasterer`（快掃）；`bullet` / `prosopite`、`lol_dba`（深掃）| eager load、加 index、快取 |
+| 4 | 可維護性 | 改動慢、改動有風險 | `rubycritic`（reek + flay + flog）、`rubocop`、`rails_best_practices`、`erb_lint` | 抽 service / concern、拆方法 |
 | 5 | 技術債新鮮度 | 漏洞與版本漂移累積 | `bundle outdated`、`bundler-audit` | 排程升級 gem |
-| 6 | 死碼與覆蓋率 | 隱藏風險、不敢改 | `simplecov`（runtime）| 刪死碼、補測試 |
+| 6 | 死碼與覆蓋率 | 隱藏風險、不敢改 | `simplecov`（深掃）| 刪死碼、補測試 |
 
-### 兩個階段
+### 兩輪掃描：先快讀，再深看
 
-**第一階段——靜態掃描**（腳本自動化的部分）：跑那些只需要原始碼 + `Gemfile.lock`
-的工具。不啟動 app、不連資料庫、也不在專案裡永久安裝任何東西——工具優先用已安裝的
-binary，否則退而用 `gem exec`（Ruby 3.2+）。
+這個工具分兩輪跑。
 
-**第二階段——runtime 檢查**（寫在報告裡）：那三項需要 app 啟動並連上資料庫才驗得到的
-檢查——資料正確性（`active_record_doctor`）、N+1（`bullet`）、覆蓋率（`simplecov`）。
-這些以「後續待辦」列出而非自動執行，因為它們需要在目標專案裡暫時加上 gem。
+**第一輪——讀程式碼（腳本會自動幫你做）**
+它只「讀」你的原始碼和 gem 清單，就這樣。不會啟動你的 app、不碰資料庫、也不會在你
+專案裡裝任何東西。所以它對任何專案都能隨時安全地跑，而且很快。這一輪涵蓋：
+安全、授權、可維護性、慣例、技術債。（工具優先用你已安裝的，沒有的話用 `gem exec`
+即時抓下來跑——需要 Ruby 3.2+。）
+
+**第二輪——把 app 跑起來（腳本只「列出」，不會自己跑）**
+有三件事光「讀程式碼」查不出來，一定要把 app 真的跑起來、連上資料庫才知道：
+
+- 資料安不安全？——缺外鍵 / 索引（`active_record_doctor`）
+- 有沒有拖垮效能的 N+1 查詢？（`bullet`）
+- 測試到底覆蓋了多少程式碼？（`simplecov`）
+
+要跑這些，得在專案裡暫時加一兩個 gem 再啟動，所以工具不替你做，而是把它們當
+「下一步待辦」清楚寫進報告裡。
+
+一句話：**第一輪＝讀程式碼（自動、安全、快）；第二輪＝把 app 跑起來，抓讀不出來的問題
+（手動跟進）。**
+
+### 每個工具在檢查什麼
+
+**安全與合規**
+- **brakeman** — 不執行、只「讀」你的 Rails 程式碼，挑出安全漏洞：SQL injection、
+  XSS、不安全的轉址等等。
+- **bundler-audit** — 拿你鎖定的 gem 版本，去比對一個已知安全漏洞（CVE）資料庫。
+- **license_finder** — 列出你所有依賴 gem 的授權條款，標出專案還沒核可的——
+  在重視授權合規的地方很有用。
+
+**資料正確性**（第二輪）
+- **active_record_doctor** — 拿你的資料庫跟 model 對照，找出缺的外鍵、索引、
+  `NOT NULL`、unique 約束。
+
+**效能**
+- **fasterer** — 快速指出寫得慢的 Ruby 寫法。
+- **bullet**（第二輪）— 在 app 跑的時候盯著，抓 N+1 查詢。
+- **prosopite**（第二輪）— 更嚴格的 N+1 偵測，抓得到 bullet 漏掉的。
+- **lol_dba**（第二輪）— 找出被拿來查詢、卻沒有資料庫索引的欄位。
+
+**可維護性**
+- **rubycritic** — 給整個 codebase 一個品質總分（A–F）。它底下跑下面三個再合起來：
+  - **reek** — 點名「壞味道」：方法太長、命名含糊、一個 class 管太多事。
+  - **flog** — 評每個方法有多複雜、多難測試。
+  - **flay** — 找複製貼上的重複碼。
+- **rubocop** — Ruby 風格與 lint 檢查的事實標準。
+- **rails_best_practices** — Rails 專屬建議：肥 controller、該放 model 的邏輯、
+  迪米特法則等。
+- **erb_lint** — 檢查 ERB view 樣板的排版問題（rubocop 看不到的部分）。
+
+**技術債與覆蓋率**
+- **bundle outdated** — 列出落後最新版的 gem。
+- **simplecov**（第二輪）— 量你的測試實際跑過多少比例的程式碼。
 
 ### 跟 CI、跟 rubycritic 差在哪
 

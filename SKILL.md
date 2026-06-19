@@ -26,9 +26,10 @@ Findings are ranked by **business impact**, not by how easy they are to fix.
 | Rank | Category | What it threatens | Tools (Y) | Typical fix (Z) |
 |------|----------|-------------------|-----------|------------------|
 | 1 | Security | Breach, data leak | `brakeman`, `bundler-audit` | Patch, upgrade, sanitize |
+| 1 | Compliance | Legal/licensing risk | `license_finder` | Approve or replace the gem |
 | 2 | Data correctness | Bad/corrupt data | `active_record_doctor` (runtime) | Add FK / NOT NULL / unique index |
 | 3 | Performance | Slowness, outages under load | `fasterer` (static); `bullet`/`prosopite`, `lol_dba` (runtime) | Eager load, add index, cache |
-| 4 | Maintainability | Slow, risky changes | `rubycritic` (=reek+flay+flog), `rubocop`, `rails_best_practices` | Extract service/concern, split methods |
+| 4 | Maintainability | Slow, risky changes | `rubycritic` (=reek+flay+flog), `rubocop`, `rails_best_practices`, `erb_lint` | Extract service/concern, split methods |
 | 5 | Tech debt freshness | Vuln + drift accumulation | `bundle outdated`, `bundler-audit` | Scheduled gem upgrades |
 | 6 | Dead code & coverage | Hidden risk, fear of change | `simplecov` (runtime) | Delete dead code, add tests |
 

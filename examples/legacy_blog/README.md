@@ -15,6 +15,7 @@ What is planted, by severity rank:
 | 2 | Data correctness | missing index / FK / unique index | `db/schema.rb` (Phase 2) |
 | 3 | Performance | N+1 in the view | `views/posts/index.html.erb` |
 | 4 | Maintainability | fat method, duplication, Law of Demeter | `posts_controller.rb`, `post.rb` |
+| 4 | Maintainability | sloppy ERB formatting (erb_lint) | `views/posts/_form.html.erb` |
 
 Run the audit against it:
 

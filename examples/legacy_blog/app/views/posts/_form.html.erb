@@ -1,0 +1,10 @@
+<%# Intentionally bad ERB formatting (erb_lint flags style issues). %>
+<%=form_for @post do |f| %>
+  < div  class="field" >
+    <%=f.label :title%>
+    <%=f.text_field    :title %>
+  </div>
+  <div class="actions">
+    <%=f.submit%>
+  </div>
+<% end %>

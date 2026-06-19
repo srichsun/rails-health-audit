@@ -38,22 +38,70 @@ injection outranks ten thousand style offenses.
 | Rank | Category | What it threatens | Tools (_Y_) | Typical fix (_Z_) |
 |------|----------|-------------------|-------------|-------------------|
 | 1 | Security | Breach, data leak | `brakeman`, `bundler-audit` | Patch, upgrade, sanitize |
+| 1 | Compliance | Legal / licensing risk | `license_finder` | Approve or replace the gem |
 | 2 | Data correctness | Bad / corrupt data | `active_record_doctor` (runtime) | Add FK / NOT NULL / unique index |
 | 3 | Performance | Slowness, outages under load | `fasterer` (static); `bullet` / `prosopite`, `lol_dba` (runtime) | Eager load, add index, cache |
-| 4 | Maintainability | Slow, risky changes | `rubycritic` (reek + flay + flog), `rubocop`, `rails_best_practices` | Extract service / concern, split methods |
+| 4 | Maintainability | Slow, risky changes | `rubycritic` (reek + flay + flog), `rubocop`, `rails_best_practices`, `erb_lint` | Extract service / concern, split methods |
 | 5 | Tech-debt freshness | Vulnerability + drift accumulation | `bundle outdated`, `bundler-audit` | Scheduled gem upgrades |
 | 6 | Dead code & coverage | Hidden risk, fear of change | `simplecov` (runtime) | Delete dead code, add tests |
 
-### Two phases
+### Two passes: a quick read, then a deeper look
 
-**Phase 1 — static scan** (what the script automates): runs the tools that need only
-source + `Gemfile.lock`. No app boot, no database, nothing installed permanently —
-tools run via the installed binary, falling back to `gem exec` (Ruby 3.2+).
+**Pass 1 — read the code (the script does this for you, automatically).**
+It only _reads_ your source files and your gem list. It never starts your app, never
+touches your database, and installs nothing into your project. So it is safe to run on
+any codebase at any time, and it is fast. This pass covers security, licensing,
+maintainability, conventions, and tech debt. (Tools run from your installed binary, or
+are fetched on the fly with `gem exec` if you don't have them — Ruby 3.2+.)
 
-**Phase 2 — runtime checks** (documented in the report): the three checks that need the
-app to boot against a database — data correctness (`active_record_doctor`), N+1
-(`bullet`), and coverage (`simplecov`). These are listed as follow-ups rather than
-auto-run, because they require temporarily adding gems to the target project.
+**Pass 2 — run the app (the script only _lists_ these; it does not run them).**
+Three things simply cannot be answered by reading code — you have to actually run the
+app against a real database:
+
+- Is the data safe? — missing foreign keys / indexes (`active_record_doctor`)
+- Are there slow N+1 queries? (`bullet`)
+- How much of the code do the tests actually cover? (`simplecov`)
+
+Running these means temporarily adding a gem or two and booting the app, so the audit
+doesn't do it automatically — it writes them into the report as clear next steps.
+
+In one line: **Pass 1 reads the code (automatic, safe, fast); Pass 2 runs the app to
+catch what reading can't (a manual follow-up).**
+
+### What each tool checks
+
+**Security & compliance**
+- **brakeman** — reads your Rails code (without running it) and flags security holes:
+  SQL injection, XSS, unsafe redirects, and so on.
+- **bundler-audit** — checks your locked gem versions against a database of known
+  security advisories (CVEs).
+- **license_finder** — lists the license of every gem you depend on and flags any your
+  project hasn't approved — useful where licensing is regulated.
+
+**Data correctness** (Pass 2)
+- **active_record_doctor** — compares your database to your models and finds missing
+  foreign keys, indexes, `NOT NULL`, and unique constraints.
+
+**Performance**
+- **fasterer** — quick hints about slow Ruby idioms.
+- **bullet** (Pass 2) — watches the running app and flags N+1 queries.
+- **prosopite** (Pass 2) — a stricter N+1 detector; catches cases bullet misses.
+- **lol_dba** (Pass 2) — finds columns used in lookups that have no database index.
+
+**Maintainability**
+- **rubycritic** — gives the codebase one overall quality score (A–F). It runs the three
+  tools below and combines them:
+  - **reek** — names "code smells": over-long methods, vague names, classes doing too much.
+  - **flog** — scores how complex (and hard to test) each method is.
+  - **flay** — finds duplicated / copy-pasted code.
+- **rubocop** — the de-facto Ruby style and lint checker.
+- **rails_best_practices** — Rails-specific advice: fat controllers, logic that belongs
+  in models, Law of Demeter, etc.
+- **erb_lint** — lints your ERB view templates for style issues rubocop doesn't see.
+
+**Tech debt & coverage**
+- **bundle outdated** — lists gems that are behind their latest release.
+- **simplecov** (Pass 2) — measures how much of your code your test suite actually runs.
 
 ### How it differs from CI and from rubycritic
 
