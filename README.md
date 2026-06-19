@@ -1,4 +1,4 @@
-# rails-health-audit
+# 🩺 rails-health-audit
 
 **English** | [繁體中文](README.zh-TW.md)
 
@@ -11,7 +11,7 @@ is a plain shell script you can run on its own.
 
 ---
 
-## Why this exists
+## 🤔 Why this exists
 
 Mature Rails systems accumulate debt: security holes, missing database constraints,
 N+1 queries, duplicated code, and gems that are years behind. The Ruby ecosystem
@@ -28,7 +28,7 @@ can act on.
 
 ---
 
-## When to use it — and when not to
+## 🎯 When to use it — and when not to
 
 **A good fit when:**
 - You're inheriting or onboarding a codebase you didn't write and need a map of its weak
@@ -48,7 +48,7 @@ can act on.
 
 ---
 
-## How it works
+## ⚙️ How it works
 
 ### The severity model
 
@@ -128,7 +128,7 @@ what reading can't (needs the DB set up).**
 
 ---
 
-## Install
+## 📦 Install
 
 As a Claude Code skill:
 
@@ -154,7 +154,7 @@ Requirements: Ruby 3.2+ (for `gem exec`). The analysis tools are fetched on dema
 
 ---
 
-## Usage
+## 🚀 Usage
 
 **With Claude Code (easiest).** Just ask in plain language — Claude picks up the skill,
 runs the scan, and does the triage for you:
@@ -192,7 +192,7 @@ bundle (your `Gemfile` is untouched), and writes `<project>/tmp/health-audit/PAS
 
 ---
 
-## Try it on the bundled example
+## 🧪 Try it on the bundled example
 
 The repo ships a tiny, **intentionally broken** Rails app so you can see the
 audit light up without pointing it at your own code:
@@ -212,7 +212,7 @@ A real-world walkthrough (a legacy Rails 4.1 app) is in
 
 ---
 
-## Limitations
+## ⚠️ Limitations
 
 - `pass2.sh` automates the data-correctness and indexing checks, but the N+1 and coverage
   checks still need the app *exercised* (requests / the test suite), so those stay manual.
@@ -220,6 +220,6 @@ A real-world walkthrough (a legacy Rails 4.1 app) is in
   ambient Ruby does not match the project's pinned version.
 - The audit assesses and plans. It never edits your code — that decision stays human.
 
-## License
+## 📄 License
 
 MIT — see [LICENSE](LICENSE).
