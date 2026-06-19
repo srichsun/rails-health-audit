@@ -28,6 +28,26 @@ can act on.
 
 ---
 
+## When to use it — and when not to
+
+**A good fit when:**
+- You're inheriting or onboarding a codebase you didn't write and need a map of its weak
+  spots fast.
+- The project is legacy with no CI, or only partial CI.
+- You're planning a refactor / cleanup and need a prioritized backlog, not a pass/fail gate.
+- You're assessing a system one-off — due diligence, or a team taking over someone else's app.
+- You want the runtime data-correctness / N+1 checks that most CI pipelines don't run.
+
+**Not the right tool when:**
+- The project already has mature CI running these checks on every PR — re-running the
+  static ones adds little.
+- You want a merge gate: that's CI's job (gate the diff). This produces a report to
+  prioritize from, not a build pass/fail.
+- You expect it to replace CI. It's a periodic assessment, not continuous enforcement —
+  the two are complementary: this finds the backlog, CI keeps it from coming back.
+
+---
+
 ## How it works
 
 ### The severity model
@@ -105,26 +125,6 @@ what reading can't (needs the DB set up).**
 - **vs. rubycritic / rails_code_auditor**: those run tools and report metrics. This adds
   the severity ranking, the runtime phase those static bundles skip, and the step that
   turns raw output into a prioritized plan.
-
----
-
-## When to use it — and when not to
-
-**A good fit when:**
-- You're inheriting or onboarding a codebase you didn't write and need a map of its weak
-  spots fast.
-- The project is legacy with no CI, or only partial CI.
-- You're planning a refactor / cleanup and need a prioritized backlog, not a pass/fail gate.
-- You're assessing a system one-off — due diligence, or a team taking over someone else's app.
-- You want the runtime data-correctness / N+1 checks that most CI pipelines don't run.
-
-**Not the right tool when:**
-- The project already has mature CI running these checks on every PR — re-running the
-  static ones adds little.
-- You want a merge gate: that's CI's job (gate the diff). This produces a report to
-  prioritize from, not a build pass/fail.
-- You expect it to replace CI. It's a periodic assessment, not continuous enforcement —
-  the two are complementary: this finds the backlog, CI keeps it from coming back.
 
 ---
 
