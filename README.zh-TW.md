@@ -119,6 +119,37 @@ Finding 依「它威脅到什麼」排序，**而不是**依數量。一個 SQL 
 
 ---
 
+## 🧭 跟其他工具的比較
+
+市面上健康度工具很多，這個不是要贏過它們，而是補一個**特定 niche**。獨特之處在**組合**：
+Rails 專屬檢查 **＋** runtime 資料正確性 **＋** 零足跡——不是單一功能。
+
+| 工具 | 懂 Rails | runtime 資料正確性¹ | 在哪跑 |
+|------|:-------:|:------------------:|--------|
+| **rails-health-audit**（本工具）| ✅ | ✅ `active_record_doctor`、`lol_dba` | 本機 / Claude Code——不動專案 |
+| rails_code_auditor | ✅ | ❌ 只有 static | 裝進專案的 gem |
+| rails_code_health · rails-audit | ✅ | ❌ 只有 static | 裝進專案的 gem |
+| CodeScene | ❌ 語言無關² | ❌ | 商業 SaaS |
+| DeepSource | ❌ Ruby analyzer，非 Rails 框架 | ❌ | SaaS |
+| SonarQube | ❌ 多語言 | ❌ | SaaS / 自架 |
+| Tech Debt Reviewer（Claude skill）| ❌ 語言無關 | ❌ | Claude Code |
+
+¹ 啟動 app、檢查「資料庫有沒有撐住 model 假設的限制」——缺外鍵、`NOT NULL`、unique index。
+² CodeScene、DeepSource、SonarQube **都支援** Ruby，但是用通用方式分析，不懂 Rails /
+ActiveRecord 的慣例。
+
+它不取代上面任何一個——已經在用 CodeScene 或有成熟 CI 的團隊覆蓋率很高了。它的定位是：
+**一個輕量、懂 Rails、零足跡的評估，讓你能對一個剛接手的 codebase 馬上跑一遍。**
+
+**出處：** [2026 最佳 Code Health 工具（repowise）](https://www.repowise.dev/blog/comparisons/best-code-health-tools-2026)
+· [2026 10 大 Code Audit 工具（Panto）](https://www.getpanto.ai/blog/best-code-audit-tools)
+· [2026 技術債工具（CodeAnt）](https://www.codeant.ai/blogs/tools-measure-technical-debt)
+· [CodeScene 語言支援](https://docs.enterprise.codescene.io/latest/usage/language-support.html)
+· [DeepSource Ruby（GA）](https://deepsource.com/blog/ruby-general-availability-release/)
+· [SonarQube Ruby](https://docs.sonarsource.com/sonarqube-server/latest/analyzing-source-code/languages/ruby/)
+
+---
+
 ## 📦 安裝
 
 當成 Claude Code skill：

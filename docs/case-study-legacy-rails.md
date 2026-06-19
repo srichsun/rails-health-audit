@@ -20,13 +20,15 @@ bash scripts/audit-static.sh /path/to/app
 |------|----------|------|---------|
 | 1 | Security | brakeman | **84** warnings (46 SQL injection, 9 command injection, 9 CSRF, …) |
 | 1 | Security | bundler-audit | **170** vulnerable-gem advisories (11 Critical, 65 High, 61 Medium) |
+| 1 | Compliance | license_finder | skipped (needs `bundle install`; app pins Ruby 2.3.5) |
 | 3 | Performance | fasterer | 104 suggestions |
 | 4 | Maintainability | rubycritic | score **72.5** / 100, **4,562** smells |
 | 4 | Maintainability | rubocop | **9,321** offenses |
+| 4 | Maintainability | erb_lint | **390** ERB template offenses |
 | 4 | Rails conventions | rails_best_practices | **449** warnings |
 | 5 | Tech debt | bundle outdated | skipped (pinned to Ruby 2.3.5) |
 
-Eleven thousand findings. If you start at the top of that list and work down, you will
+Fifteen thousand findings. If you start at the top of that list and work down, you will
 spend a month on RuboCop and never touch the SQL injection. So the value of the tool is
 not the numbers — it is the ordering that comes next.
 
@@ -74,7 +76,7 @@ is: get them green and into CI _first_, then do the risky upgrade behind that sa
 ## The takeaway
 
 A static scan is a diagnosis, not a cure. The skill that matters in a legacy codebase is
-not running the tools — anyone can do that — it is reading eleven thousand findings and
+not running the tools — anyone can do that — it is reading fifteen thousand findings and
 saying, with reasons, "do these six things, in this order." The biggest win here was a
 single root-cause move (the Rails upgrade) that a count-sorted list would have buried on
 page forty.

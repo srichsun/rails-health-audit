@@ -128,6 +128,40 @@ what reading can't (needs the DB set up).**
 
 ---
 
+## 🧭 How it compares
+
+There are plenty of code-health tools. This one isn't trying to beat them — it fills a
+specific niche. What's distinctive is the **combination**: Rails-aware checks **+**
+runtime data-correctness **+** zero footprint — not any single feature.
+
+| Tool | Rails-aware | Runtime data-correctness¹ | Runs where |
+|------|:-----------:|:-------------------------:|------------|
+| **rails-health-audit** (this) | ✅ | ✅ `active_record_doctor`, `lol_dba` | Local / Claude Code — nothing added to the project |
+| rails_code_auditor | ✅ | ❌ static only | Gem added to the project |
+| rails_code_health · rails-audit | ✅ | ❌ static only | Gem added to the project |
+| CodeScene | ❌ language-agnostic² | ❌ | Commercial SaaS |
+| DeepSource | ❌ Ruby analyzer, not Rails-framework | ❌ | SaaS |
+| SonarQube | ❌ multi-language | ❌ | SaaS / self-hosted |
+| Tech Debt Reviewer (Claude skill) | ❌ language-agnostic | ❌ | Claude Code |
+
+¹ Booting the app to check that the database enforces what the models assume — missing
+foreign keys, `NOT NULL`, unique indexes. ² CodeScene, DeepSource and SonarQube all
+*support* Ruby, but analyze it generically; they don't reason about Rails / ActiveRecord
+conventions.
+
+It doesn't replace any of these — a team already on CodeScene or with mature CI is well
+covered. The point is a lightweight, Rails-aware, zero-footprint assessment you can run on
+a codebase you've just inherited.
+
+**Sources:** [Best Code Health Tools in 2026 (repowise)](https://www.repowise.dev/blog/comparisons/best-code-health-tools-2026)
+· [10 Best Code Audit Tools in 2026 (Panto)](https://www.getpanto.ai/blog/best-code-audit-tools)
+· [Top Technical Debt Tools 2026 (CodeAnt)](https://www.codeant.ai/blogs/tools-measure-technical-debt)
+· [CodeScene language support](https://docs.enterprise.codescene.io/latest/usage/language-support.html)
+· [DeepSource Ruby (GA)](https://deepsource.com/blog/ruby-general-availability-release/)
+· [SonarQube Ruby](https://docs.sonarsource.com/sonarqube-server/latest/analyzing-source-code/languages/ruby/)
+
+---
+
 ## 📦 Install
 
 As a Claude Code skill:
