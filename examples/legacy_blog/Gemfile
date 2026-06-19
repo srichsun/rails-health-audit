@@ -1,0 +1,8 @@
+# Intentionally pinned to old, end-of-life versions for the demo.
+source "https://rubygems.org"
+
+gem "rails", "4.1.16"
+gem "rack", "1.6.0"
+gem "nokogiri", "1.6.0"
+gem "devise", "3.4.0"
+gem "puma", "3.6.0"

@@ -1,0 +1,3 @@
+# Generated audit output
+tmp/health-audit/
+examples/**/tmp/

@@ -60,11 +60,12 @@ echo "  bundler-audit: ${AUDIT} vulnerable gem advisory(ies)"
 echo "[2/6] Maintainability — rubycritic (reek+flay+flog), rubocop"
 run_tool rubycritic rubycritic "$RAW/rubycritic.txt" --no-browser -f console -p "$RAW/rubycritic" "${SRC_DIRS[@]}"
 RC_SCORE=$(grep -ioE 'score[: ]+[0-9]+(\.[0-9]+)?' "$RAW/rubycritic.txt" | grep -oE '[0-9]+(\.[0-9]+)?' | head -1)
-RC_SMELLS=$(grep -E 'Smells:' "$RAW/rubycritic.txt" | grep -oE '[0-9]+' | head -1)
+RC_SMELLS=$(grep -E 'Smells:' "$RAW/rubycritic.txt" | awk '{s+=$2} END{print s+0}')
 RC_SMELLS="${RC_SMELLS:-?}"
 echo "  rubycritic: score ${RC_SCORE:-?}, ${RC_SMELLS} smell(s)"
 
-run_tool rubocop rubocop "$RAW/rubocop.txt" --no-server --format simple "${SRC_DIRS[@]}"
+# --force-default-config so a project's stale .rubocop.yml can't abort the run.
+run_tool rubocop rubocop "$RAW/rubocop.txt" --no-server --force-default-config --format simple "${SRC_DIRS[@]}"
 if grep -q 'no offenses detected' "$RAW/rubocop.txt" 2>/dev/null; then
   RUBOCOP=0
 else
@@ -93,9 +94,13 @@ echo "  rails_best_practices: ${RBP} warning(s)"
 # ---------------------------------------------------------------------------
 echo "[5/6] Tech debt — bundle outdated"
 ( cd "$PROJECT" && bundle outdated --parseable ) >"$RAW/outdated.txt" 2>&1
-OUTDATED=$(grep -cE '\(newest' "$RAW/outdated.txt" 2>/dev/null)
-[[ "${OUTDATED:-0}" == "0" ]] && OUTDATED=$(grep -cE '^[a-z0-9_.-]+ \(' "$RAW/outdated.txt" 2>/dev/null)
-OUTDATED="${OUTDATED:-?}"
+if grep -qiE 'your Ruby version|your Gemfile specified|Could not find|Bundler::' "$RAW/outdated.txt" 2>/dev/null; then
+  OUTDATED="skipped (Ruby/bundle mismatch — run with project's Ruby)"
+else
+  OUTDATED=$(grep -cE '\(newest' "$RAW/outdated.txt" 2>/dev/null)
+  [[ "${OUTDATED:-0}" == "0" ]] && OUTDATED=$(grep -cE '^[a-z0-9_.-]+ \(' "$RAW/outdated.txt" 2>/dev/null)
+  OUTDATED="${OUTDATED:-?}"
+fi
 echo "  bundle outdated: ${OUTDATED} gem(s) behind"
 
 echo "[6/6] Writing report"
