@@ -1,0 +1,120 @@
+RubyCritic can provide more feedback if you use a Git, Mercurial or Perforce repository. Churn will not be calculated.
+running flay smells
+
+running flog smells
+[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m
+running reek smells
+[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m
+running complexity
+[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m
+running attributes
+[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m
+running churn
+[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m
+running simple_cov
+[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m
+ApplicationController:
+  Rating:       A
+  Churn:        0
+  Complexity:   0.0
+  Duplication:  0
+  Smells:       1
+    * (IrresponsibleModule) ApplicationController has no descriptive comment
+      - app/controllers/application_controller.rb:1
+
+ApplicationHelper:
+  Rating:       A
+  Churn:        0
+  Complexity:   0.0
+  Duplication:  0
+  Smells:       1
+    * (IrresponsibleModule) ApplicationHelper has no descriptive comment
+      - app/helpers/application_helper.rb:1
+
+ApplicationRecord:
+  Rating:       A
+  Churn:        0
+  Complexity:   0.0
+  Duplication:  0
+  Smells:       1
+    * (IrresponsibleModule) ApplicationRecord has no descriptive comment
+      - app/models/application_record.rb:1
+
+Product:
+  Rating:       A
+  Churn:        0
+  Complexity:   30.72
+  Duplication:  0
+  Smells:       5
+    * (UncommunicativeMethodName) Product#s has the name 's'
+      - app/models/product.rb:25
+    * (UncommunicativeParameterName) Product#s has the parameter name 'x'
+      - app/models/product.rb:25
+    * (UncommunicativeVariableName) Product#s has the variable name 'i'
+      - app/models/product.rb:27
+    * (UncommunicativeVariableName) Product#s has the variable name 'r'
+      - app/models/product.rb:26
+      - app/models/product.rb:29
+      - app/models/product.rb:31
+    * (UtilityFunction) Product#s doesn't depend on instance state (maybe move it to another class?)
+      - app/models/product.rb:25
+
+Report:
+  Rating:       A
+  Churn:        0
+  Complexity:   15.91
+  Duplication:  0
+  Smells:       8
+    * (UncommunicativeVariableName) Report#count_big has the variable name 'i'
+      - app/models/report.rb:21
+    * (UncommunicativeVariableName) Report#first_match has the variable name 'i'
+      - app/models/report.rb:6
+    * (UncommunicativeVariableName) Report#flatten_all has the variable name 'i'
+      - app/models/report.rb:26
+    * (UncommunicativeVariableName) Report#reverse_loop has the variable name 'i'
+      - app/models/report.rb:16
+    * (UtilityFunction) Report#count_big doesn't depend on instance state (maybe move it to another class?)
+      - app/models/report.rb:19
+    * (UtilityFunction) Report#first_match doesn't depend on instance state (maybe move it to another class?)
+      - app/models/report.rb:4
+    * (UtilityFunction) Report#flatten_all doesn't depend on instance state (maybe move it to another class?)
+      - app/models/report.rb:24
+    * (UtilityFunction) Report#has_total? doesn't depend on instance state (maybe move it to another class?)
+      - app/models/report.rb:9
+
+ProductsController:
+  Rating:       B
+  Churn:        0
+  Complexity:   98.03
+  Duplication:  0
+  Smells:       13
+    * (HighComplexity) ProductsController#create has a flog score of 50
+      - app/controllers/products_controller.rb:14
+    * (HighComplexity) ProductsController#update has a flog score of 35
+      - app/controllers/products_controller.rb:41
+    * (DuplicateMethodCall) ProductsController#create calls '@product.id' 2 times
+      - app/controllers/products_controller.rb:20
+      - app/controllers/products_controller.rb:28
+    * (DuplicateMethodCall) ProductsController#create calls 'render :new' 2 times
+      - app/controllers/products_controller.rb:33
+      - app/controllers/products_controller.rb:37
+    * (DuplicateMethodCall) ProductsController#create calls 't.strip' 2 times
+      - app/controllers/products_controller.rb:24
+    * (DuplicateMethodCall) ProductsController#index calls 'params[:q]' 2 times
+      - app/controllers/products_controller.rb:8
+      - app/controllers/products_controller.rb:10
+    * (DuplicateMethodCall) ProductsController#update calls 't.strip' 2 times
+      - app/controllers/products_controller.rb:48
+    * (InstanceVariableAssumption) ProductsController assumes too much for instance variable '@product'
+      - app/controllers/products_controller.rb:3
+    * (TooManyStatements) ProductsController#create has approx 15 statements
+      - app/controllers/products_controller.rb:14
+    * (TooManyStatements) ProductsController#update has approx 10 statements
+      - app/controllers/products_controller.rb:41
+    * (UncommunicativeVariableName) ProductsController#create has the variable name 'e'
+      - app/controllers/products_controller.rb:35
+    * (UncommunicativeVariableName) ProductsController#create has the variable name 't'
+      - app/controllers/products_controller.rb:23
+    * (UncommunicativeVariableName) ProductsController#update has the variable name 't'
+      - app/controllers/products_controller.rb:47
+Score: 93.97

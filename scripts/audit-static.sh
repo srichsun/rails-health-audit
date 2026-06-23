@@ -13,13 +13,14 @@ if [[ ! -f "$PROJECT/Gemfile" || ! -f "$PROJECT/config/application.rb" ]]; then
   exit 1
 fi
 
-TS="$(date '+%Y%m%d-%H%M%S')"          # timestamp for this run's filenames
+TS="$(date '+%Y%m%d-%H%M%S')"          # timestamp for this run's folder
 STAMP="$(date '+%Y-%m-%d %H:%M')"      # human-readable, shown inside the report
-OUT="$PROJECT/tmp/health-audit"
-RAW="$OUT/raw-result-$TS"             # per-run raw folder, never overwrites old runs
+# Each run gets its own folder, so re-runs never clash and you can diff before/after.
+RUN="$PROJECT/tmp/health-audit/report-$TS"
+RAW="$RUN/raw_original_result"
 mkdir -p "$RAW"
-REPORT="$OUT/static-scan-report-$TS.md"
-RAW_REL="$(basename "$RAW")"          # relative name for links inside the report
+REPORT="$RUN/static-scan-report.md"
+RAW_REL="raw_original_result"          # relative path used in links inside the report
 
 echo "Rails Health Audit → $PROJECT"
 echo "Report → $REPORT"

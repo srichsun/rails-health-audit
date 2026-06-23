@@ -1,0 +1,20 @@
+<h1 >Products</h1>
+
+<%# XSS: user input marked html_safe (brakeman flags this) %>
+<p>Results for: <%=params[:q].html_safe%></p>
+
+
+
+<%# Logic in the view + N+1 (each product hits owner per row) %>
+<ul>
+  <% @products.each do |product| %>
+    <li  >
+      <%=product.name%> —
+      <% if product.owner && product.owner.address && product.owner.address.city == "Taipei" %>
+        <strong><%= product.owner.name %></strong>
+      <% else %>
+        <%= product.owner.name if product.owner %>
+      <% end %>
+    </li>
+  <% end %>
+</ul>

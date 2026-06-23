@@ -77,8 +77,8 @@ html_to_pdf() { # <html-file> <pdf-file>
 
 echo "Exporting reports in $OUT (format: $FORMAT)"
 # Export the latest static + dynamic reports (filenames carry a timestamp).
-latest_static="$(ls -t "$OUT"/static-scan-report-*.md 2>/dev/null | head -1)"
-latest_dynamic="$(ls -t "$OUT"/dynamic-scan-report-*.md 2>/dev/null | head -1)"
+latest_static="$(ls -t "$OUT"/report-*/static-scan-report.md 2>/dev/null | head -1)"
+latest_dynamic="$(ls -t "$OUT"/report-*/dynamic-scan-report.md 2>/dev/null | head -1)"
 exported=0
 for md in "$latest_static" "$latest_dynamic"; do
   [[ -n "$md" && -f "$md" ]] || continue

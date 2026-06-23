@@ -1,0 +1,9 @@
+[31mapp/models/report.rb:6[0m Array#select.first is slower than Array#detect.
+[31mapp/models/report.rb:16[0m Array#reverse.each is slower than Array#reverse_each.
+
+[31mconfig/environments/production.rb:38[0m Hash#fetch with second argument is slower than Hash#fetch with block.
+
+[31mconfig/puma.rb:28[0m Hash#fetch with second argument is slower than Hash#fetch with block.
+[31mconfig/puma.rb:32[0m Hash#fetch with second argument is slower than Hash#fetch with block.
+
+[32m20 files inspected[0m, [31m5 offenses detected[0m

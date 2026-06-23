@@ -231,25 +231,28 @@ bundle (your `Gemfile` is untouched), and writes `<project>/tmp/health-audit/dyn
 Everything lands under `<project>/tmp/health-audit/` (git-ignored — it's generated). The
 scripts also print the report path to the terminal when they finish.
 
-Each run is timestamped, so a new run never overwrites an older one.
+Each run gets its own timestamped `report-<timestamp>/` folder, so a new run never
+overwrites an older one — keep them to diff before/after.
 
 ```
 <project>/tmp/health-audit/
-├── static-scan-report-<timestamp>.md    # overview (all checks) + prioritized Action plan
-├── dynamic-scan-report-<timestamp>.md   # dynamic scan results (only if you ran audit-dynamic.sh)
-└── raw-result-<timestamp>/              # full, unprocessed output from every tool
-    ├── brakeman.txt
-    ├── bundler-audit.txt
-    ├── license_finder.txt
-    ├── rubocop.txt
-    ├── rubycritic.txt
-    ├── fasterer.txt
-    ├── rails_best_practices.txt
-    └── outdated.txt
+└── report-<timestamp>/                  # one folder per run
+    ├── static-scan-report.md            # overview (all checks) + prioritized Action plan
+    ├── dynamic-scan-report.md           # dynamic scan results (only if you ran audit-dynamic.sh)
+    └── raw_original_result/             # full, unprocessed output from every tool
+        ├── brakeman.txt
+        ├── bundler-audit.txt
+        ├── license_finder.txt
+        ├── rubocop.txt
+        ├── erb_lint.txt
+        ├── rubycritic.txt
+        ├── fasterer.txt
+        ├── rails_best_practices.txt
+        └── outdated.txt
 ```
 
-The `static-scan-report-*.md` is the one you read and act on; each Action plan item cites
-the `file:line` and the `raw-result-*/…txt` it came from, so findings are traceable.
+The `static-scan-report.md` is the one you read and act on; each Action plan item cites
+the `file:line` and the `raw_original_result/…txt` it came from, so findings are traceable.
 
 Want a shareable copy? `bash scripts/export.sh <project> both` renders `static-scan-report.md` /
 `dynamic-scan-report.md` to HTML + PDF (optional — markdown stays the source of truth).
@@ -258,17 +261,19 @@ Want a shareable copy? `bash scripts/export.sh <project> both` renders `static-s
 
 ## 🧪 Try it on the bundled example
 
-The repo ships a tiny, **intentionally broken** Rails app so you can see the
-audit light up without pointing it at your own code:
+The repo ships a real, **intentionally broken** Rails 8 app (`example-unhealthy-project`)
+that actually `bundle install`s — so every tool (including license_finder and bundle
+outdated) produces a real finding, not a "skipped". Point the audit at it:
 
 ```sh
-bash scripts/audit-static.sh examples/legacy-project
-cat examples/legacy-project/tmp/health-audit/static-scan-report.md
+bash scripts/audit-static.sh examples/example-unhealthy-project
+cat examples/example-unhealthy-project/tmp/health-audit/report-*/static-scan-report.md
 ```
 
-See [`examples/legacy-project/README.md`](examples/legacy-project/README.md) for the list of
-problems planted in it, or read the committed output snapshot at
-[`examples/legacy-project/sample-static-scan-report.md`](examples/legacy-project/sample-static-scan-report.md) without
+See [`examples/example-unhealthy-project/README.md`](examples/example-unhealthy-project/README.md)
+for the list of problems planted in it, or read the committed output snapshot under
+[`examples/example-unhealthy-project/tmp/health-audit/`](examples/example-unhealthy-project/tmp/health-audit/)
+(a `report-<timestamp>/static-scan-report.md` with the Action plan already filled) without
 running anything.
 
 A real-world walkthrough (a legacy Rails 4.1 app) is in

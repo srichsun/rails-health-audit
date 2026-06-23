@@ -1,0 +1,30 @@
+warning: parser/current is loading parser/ruby34, which recognizes 3.4.0-dev-compliant syntax, but you are running 3.4.9.
+Please see https://github.com/whitequark/parser#compatibility-with-ruby-mri.
+.erb_lint.yml not found: using default config
+8 error(s) were found in ERB files
+Linting 2 files with 14 linters...
+
+Extra blank line detected.
+In file: app/views/products/index.html.erb:6
+
+Missing a trailing newline at the end of the file.
+In file: app/views/products/index.html.erb:20
+
+Use 1 space after `<%=` instead of 0 space.
+In file: app/views/products/index.html.erb:4
+
+Use 1 space before `%>` instead of 0 space.
+In file: app/views/products/index.html.erb:4
+
+Use 1 space after `<%=` instead of 0 space.
+In file: app/views/products/index.html.erb:12
+
+Use 1 space before `%>` instead of 0 space.
+In file: app/views/products/index.html.erb:12
+
+Extra space detected where there should be no space.
+In file: app/views/products/index.html.erb:1
+
+Extra space detected where there should be no space.
+In file: app/views/products/index.html.erb:11
+

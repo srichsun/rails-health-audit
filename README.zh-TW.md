@@ -218,25 +218,28 @@ bash scripts/audit-dynamic.sh /path/to/rails/project
 全部都產在 `<project>/tmp/health-audit/` 底下（git-ignored，是產物）。腳本跑完也會在
 終端機印出報告路徑。
 
-每次跑都帶 timestamp，新的一次不會蓋掉舊的。
+每次跑都帶 timestamp，各自一個 `report-<timestamp>/` 資料夾，新的一次不會蓋掉舊的——
+留著就能前後對比 diff。
 
 ```
 <project>/tmp/health-audit/
-├── static-scan-report-<timestamp>.md    # 總覽（所有檢查）+ 排好序的 Action plan
-├── dynamic-scan-report-<timestamp>.md   # 動態掃描結果（只有跑過 audit-dynamic.sh 才有）
-└── raw-result-<timestamp>/              # 每個工具的完整原始輸出
-    ├── brakeman.txt
-    ├── bundler-audit.txt
-    ├── license_finder.txt
-    ├── rubocop.txt
-    ├── rubycritic.txt
-    ├── fasterer.txt
-    ├── rails_best_practices.txt
-    └── outdated.txt
+└── report-<timestamp>/                  # 一次跑一個資料夾
+    ├── static-scan-report.md            # 總覽（所有檢查）+ 排好序的 Action plan
+    ├── dynamic-scan-report.md           # 動態掃描結果（只有跑過 audit-dynamic.sh 才有）
+    └── raw_original_result/             # 每個工具的完整原始輸出
+        ├── brakeman.txt
+        ├── bundler-audit.txt
+        ├── license_finder.txt
+        ├── rubocop.txt
+        ├── erb_lint.txt
+        ├── rubycritic.txt
+        ├── fasterer.txt
+        ├── rails_best_practices.txt
+        └── outdated.txt
 ```
 
-`static-scan-report-*.md` 是你拿來讀、拿來行動的那份；每條 Action plan 都標了
-`file:line` 跟它來自哪個 `raw-result-*/…txt`，所以每個發現都可以追溯。
+`static-scan-report.md` 是你拿來讀、拿來行動的那份；每條 Action plan 都標了
+`file:line` 跟它來自哪個 `raw_original_result/…txt`，所以每個發現都可以追溯。
 
 想要可分享的檔案？`bash scripts/export.sh <project> both` 會把 `static-scan-report.md` / `dynamic-scan-report.md`
 轉成 HTML + PDF（選用——markdown 仍是來源）。
@@ -245,18 +248,20 @@ bash scripts/audit-dynamic.sh /path/to/rails/project
 
 ## 🧪 用內附的範例試跑
 
-repo 內附一個極小、**故意寫壞**的 Rails app，讓你不必拿自己的 code，
-就能看到 audit 亮起來：
+repo 內附一個**真的、故意寫壞**的 Rails 8 app（`example-unhealthy-project`），它真的能
+`bundle install`——所以每個工具（包含 license_finder、bundle outdated）都會跑出真實結果，
+不會出現「skipped」。把 audit 指過去：
 
 ```sh
-bash scripts/audit-static.sh examples/legacy-project
-cat examples/legacy-project/tmp/health-audit/static-scan-report.md
+bash scripts/audit-static.sh examples/example-unhealthy-project
+cat examples/example-unhealthy-project/tmp/health-audit/report-*/static-scan-report.md
 ```
 
 範例裡植入了哪些問題，見
-[`examples/legacy-project/README.md`](examples/legacy-project/README.md)；
+[`examples/example-unhealthy-project/README.md`](examples/example-unhealthy-project/README.md)；
 或者不用跑，直接看已提交的輸出快照
-[`examples/legacy-project/sample-static-scan-report.md`](examples/legacy-project/sample-static-scan-report.md)。
+[`examples/example-unhealthy-project/tmp/health-audit/`](examples/example-unhealthy-project/tmp/health-audit/)
+（一份 Action plan 已填好的 `report-<timestamp>/static-scan-report.md`）。
 
 一份真實案例的完整解說（一個 legacy Rails 4.1 app）在
 [`docs/case-study-legacy-rails.zh-TW.md`](docs/case-study-legacy-rails.zh-TW.md)。

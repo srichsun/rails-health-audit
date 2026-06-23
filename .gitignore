@@ -1,3 +1,6 @@
 # Generated audit output
 tmp/health-audit/
 examples/**/tmp/
+# ...but keep the committed sample run shipped with the example
+!examples/example-unhealthy-project/tmp/
+!examples/example-unhealthy-project/tmp/**

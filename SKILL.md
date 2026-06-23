@@ -61,8 +61,9 @@ bash ~/.claude/skills/rails-health-audit/scripts/audit-static.sh /path/to/rails/
 
 This runs the tools that need only source + `Gemfile.lock`:
 **security (brakeman, bundler-audit), maintainability (reek/flog/flay), tech-debt
-freshness (bundle outdated)**. It writes a ranked report to
-`<project>/tmp/health-audit/static-scan-report.md` and prints a summary.
+freshness (bundle outdated)**. Each run writes a ranked report to its own folder,
+`<project>/tmp/health-audit/report-<timestamp>/static-scan-report.md` (raw tool
+output alongside it in `report-<timestamp>/raw/`), and prints a summary.
 
 Tools are invoked via the installed binary, falling back to `gem exec` (Ruby 3.2+)
 so nothing is permanently added to the target project.
@@ -86,9 +87,9 @@ The N+1 (`bullet`/`prosopite`) and coverage (`simplecov`) checks need the app *e
 
 `audit-static.sh` only writes an empty Action plan **table**; the prioritization is the
 judgment this skill exists for. **As soon as the scan finishes, read the raw logs in the
-`tmp/health-audit/raw-result-<timestamp>/` folder and fill the `## 2. Action plan` table of
-`static-scan-report-<timestamp>.md` with real rows** — then report the filled plan to the
-user. Never hand back the blank template. How to prioritize:
+`tmp/health-audit/report-<timestamp>/raw/` folder and fill the `## 2. Action plan` table of
+that run's `report-<timestamp>/static-scan-report.md` with real rows** — then report the
+filled plan to the user. Never hand back the blank template. How to prioritize:
 
 1. **Business impact over volume** — order security → data correctness → performance →
    maintainability → style. A SQL injection outranks 9,000 style offenses.
@@ -105,7 +106,7 @@ Write the plan as a **table, in English**, with these columns:
 
 - **Coverage** — give every 🔴 and 🟡 finding its own row; collapse the ⚪ style-level
   findings (rubocop / erb_lint) into a single row. Don't drop anything important.
-- **Always cite `file:line`** in the Issue cell — open the relevant `raw-result-*/…txt`,
+- **Always cite `file:line`** in the Issue cell — open the relevant `report-*/raw/…txt`,
   find the exact file and line the tool reported (brakeman lines look like `File:` + `Line:`).
   Use `<br>` for line breaks inside a cell.
 - **Always cite the raw source** in the Raw column (`<raw-folder>/<tool>.txt`).
@@ -113,7 +114,9 @@ Write the plan as a **table, in English**, with these columns:
   and must be rerun in the project's own environment.
 
 Keep it focused — every 🔴/🟡 plus one ⚪ row, ordered most-severe-first. See
-`examples/legacy-project/sample-static-scan-report.md` for a worked example.
+`examples/example-unhealthy-project/` (a real, bundle-installable Rails 8 app full of
+intentional issues) for a worked example — its filled report is under
+`tmp/health-audit/report-*/static-scan-report.md`.
 
 ### Phase 1c — export a PDF (do this once the Action plan is filled)
 

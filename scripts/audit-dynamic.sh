@@ -19,10 +19,13 @@ if [[ ! -f "$PROJECT/Gemfile" || ! -f "$PROJECT/config/application.rb" ]]; then
   echo "Not a Rails project: $PROJECT"; exit 1
 fi
 
-OUT="$PROJECT/tmp/health-audit"; RAW="$OUT/raw"
+TS="$(date '+%Y%m%d-%H%M%S')"          # timestamp for this run's folder
+STAMP="$(date '+%Y-%m-%d %H:%M')"      # human-readable, shown inside the report
+# Each run gets its own report-<timestamp>/ folder (same layout as the static scan).
+RUN="$PROJECT/tmp/health-audit/report-$TS"
+RAW="$RUN/raw_original_result"
 mkdir -p "$RAW"
-PASS2="$OUT/dynamic-scan-report.md"
-STAMP="$(date '+%Y-%m-%d %H:%M')"
+PASS2="$RUN/dynamic-scan-report.md"
 
 echo "Rails Health Audit — Pass 2 (runtime) → $PROJECT"
 
@@ -92,7 +95,7 @@ echo "  lol_dba: ${LOLDBA} missing index(es) suggested"
 {
   echo "# Rails Health Audit — Pass 2 (runtime) — $(basename "$PROJECT")"
   echo
-  echo "_Generated $STAMP. Booted the app against its database. Raw output in \`tmp/health-audit/raw/\`._"
+  echo "_Generated $STAMP. Booted the app against its database. Raw output in \`raw_original_result/\`._"
   echo
   echo "## Data correctness & indexing (active_record_doctor)"
   echo
@@ -101,7 +104,7 @@ echo "  lol_dba: ${LOLDBA} missing index(es) suggested"
   printf '%s' "$AR_ROWS"
   echo "| lol_dba (missing indexes) | ${LOLDBA} |"
   echo
-  echo "See \`raw/pass2_ar_doctor.txt\` and \`raw/pass2_lol_dba.txt\` for the specific tables/columns."
+  echo "See \`raw_original_result/pass2_ar_doctor.txt\` and \`raw_original_result/pass2_lol_dba.txt\` for the specific tables/columns."
   echo
   echo "## Still manual (need the app exercised, not just booted)"
   echo
