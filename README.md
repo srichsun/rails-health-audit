@@ -133,18 +133,11 @@ renders `health-audit-report.md` → `health-audit-report.pdf` (the `.md` stays 
 
 The repo ships a real, **intentionally broken** Rails 8 app (`example-unhealthy-project`)
 that actually `bundle install`s — so every tool (including license_finder and bundle
-outdated) produces a real finding, not a "skipped". Point the audit at it (Step 1):
+outdated) produces a real finding, not a "skipped". Point the audit at it, then follow
+Steps 2–3 above (fill the Action plan, then `export.sh` → open the PDF):
 
 ```sh
 bash scripts/audit.sh examples/example-unhealthy-project
-```
-
-Fill its Action plan (Step 2), then render and open the PDF — `open` only works **after**
-`export.sh` has produced it (Step 3):
-
-```sh
-bash scripts/export.sh examples/example-unhealthy-project
-open examples/example-unhealthy-project/tmp/health-audit/report-*/health-audit-report.pdf
 ```
 
 See [`examples/example-unhealthy-project/README.md`](examples/example-unhealthy-project/README.md)

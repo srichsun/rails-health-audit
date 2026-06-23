@@ -125,18 +125,11 @@ bash scripts/export.sh /path/to/rails/project
 
 repo 內附一個**真的、故意寫壞**的 Rails 8 app（`example-unhealthy-project`），它真的能
 `bundle install`——所以每個工具（包含 license_finder、bundle outdated）都會跑出真實結果，
-不會出現「skipped」。把 audit 指過去（步驟一）：
+不會出現「skipped」。把 audit 指過去，再照上面的步驟二、三做（填 Action plan，然後
+`export.sh` → 打開 PDF）：
 
 ```sh
 bash scripts/audit.sh examples/example-unhealthy-project
-```
-
-填好它的 Action plan（步驟二）後，再產生並打開 PDF——`open` 只有在 `export.sh` 把 PDF
-產出來（步驟三）**之後**才打得開：
-
-```sh
-bash scripts/export.sh examples/example-unhealthy-project
-open examples/example-unhealthy-project/tmp/health-audit/report-*/health-audit-report.pdf
 ```
 
 範例裡植入了哪些問題，見
