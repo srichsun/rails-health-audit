@@ -4,3 +4,7 @@ examples/**/tmp/
 # ...but keep the committed sample run shipped with the example
 !examples/example-unhealthy-project/tmp/
 !examples/example-unhealthy-project/tmp/**
+
+# Example app build artifacts (the schema is committed; the built DB and logs are not)
+examples/**/log/
+examples/**/storage/

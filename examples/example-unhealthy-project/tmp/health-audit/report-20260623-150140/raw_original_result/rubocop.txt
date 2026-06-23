@@ -339,13 +339,19 @@ C:  1:  1: [Correctable] Style/FrozenStringLiteralComment: Missing frozen string
 == app/models/application_record.rb ==
 C:  1:  1: Style/Documentation: Missing top-level documentation comment for class ApplicationRecord.
 C:  1:  1: [Correctable] Style/FrozenStringLiteralComment: Missing frozen string literal comment.
+== app/models/owner.rb ==
+C:  1:  1: Style/Documentation: Missing top-level documentation comment for class Owner.
+C:  1:  1: [Correctable] Style/FrozenStringLiteralComment: Missing frozen string literal comment.
 == app/models/product.rb ==
 C:  1:  1: [Correctable] Style/FrozenStringLiteralComment: Missing frozen string literal comment.
-C: 25:  9: Naming/MethodParameterName: Method parameter must be at least 3 characters long.
-C: 28: 10: [Correctable] Style/NumericPredicate: Use i.positive? instead of i > 0.
+C: 31:  9: Naming/MethodParameterName: Method parameter must be at least 3 characters long.
+C: 34: 10: [Correctable] Style/NumericPredicate: Use i.positive? instead of i > 0.
 == app/models/report.rb ==
 C:  1:  1: [Correctable] Style/FrozenStringLiteralComment: Missing frozen string literal comment.
 C:  9:  7: Naming/PredicatePrefix: Rename has_total? to total?.
 C: 21: 24: [Correctable] Style/NumericPredicate: Use i.positive? instead of i > 0.
+== app/models/tag.rb ==
+C:  1:  1: Style/Documentation: Missing top-level documentation comment for class Tag.
+C:  1:  1: [Correctable] Style/FrozenStringLiteralComment: Missing frozen string literal comment.
 
-6 files inspected, 23 offenses detected, 14 offenses autocorrectable
+8 files inspected, 27 offenses detected, 16 offenses autocorrectable

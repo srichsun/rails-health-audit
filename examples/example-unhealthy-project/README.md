@@ -37,6 +37,25 @@ filled in, so you can see the deliverable without running anything.
 | `config/routes.rb` | Verb confusion (`via: :all`) | brakeman / rails_best_practices |
 | (style, app-wide) | Spacing / layout offenses | rubocop |
 
+## Runtime (Phase 2) — the DB is intentionally broken too
+
+The schema (`db/migrate/`, `db/schema.rb`) is planted with data-integrity problems so the
+runtime scan also lights up. Set up the DB and run Phase 2:
+
+```sh
+bin/rails db:prepare
+bash ../../scripts/audit-dynamic.sh .
+```
+
+| Where | Problem | Caught by |
+|-------|---------|-----------|
+| `products.owner_id`, `tags.product_id` | `belongs_to` columns with no foreign key | active_record_doctor (missing_foreign_keys) |
+| `products.owner_id`, `tags.product_id` | foreign-key columns with no index | active_record_doctor (unindexed_foreign_keys) + lol_dba |
+| `products.name` (presence-validated), `tags.product_id` | nullable column the model treats as required | active_record_doctor (missing_non_null_constraint) |
+| `products.sku` (uniqueness-validated) | no unique index backing the validation | active_record_doctor (missing_unique_indexes) |
+
+A committed sample of the runtime report is in `tmp/health-audit/report-*/dynamic-scan-report.md`.
+
 ## Why a real app instead of a skeleton
 
 A trimmed skeleton can't `bundle install`, so `license_finder` and `bundle outdated` can

@@ -1,17 +1,17 @@
 
 == Brakeman Report ==
 
-Application Path: /private/tmp/example-unhealthy-project
+Application Path: /Users/dane/.claude/skills/rails-health-audit/examples/example-unhealthy-project
 Rails Version: 8.1.3
 Brakeman Version: 8.0.5
-Scan Date: 2026-06-23 14:25:41 +0800
-Duration: 0.210925 seconds
+Scan Date: 2026-06-23 15:01:40 +0800
+Duration: 0.227556 seconds
 Checks Run: BasicAuth, BasicAuthTimingAttack, CSRFTokenForgeryCVE, ContentTag, CookieSerialization, CreateWith, CrossSiteScripting, DefaultRoutes, Deserialize, DetailedExceptions, DigestDoS, DynamicFinders, EOLRails, EOLRuby, EscapeFunction, Evaluation, Execute, FileAccess, FileDisclosure, FilterSkipping, ForgerySetting, HeaderDoS, I18nXSS, JRubyXML, JSONEncoding, JSONEntityEscape, JSONParsing, LinkTo, LinkToHref, MailTo, MassAssignment, MimeTypeDoS, ModelAttrAccessible, ModelAttributes, ModelSerialize, NestedAttributes, NestedAttributesBypass, NumberToCurrency, PageCachingCVE, Pathname, PermitAttributes, QuoteTableName, Ransack, Redirect, RegexDoS, Render, RenderDoS, RenderInline, RenderRCE, ResponseSplitting, RouteDoS, SQL, SQLCVEs, SSLVerify, SafeBufferManipulation, SanitizeConfigCve, SanitizeMethods, SelectTag, SelectVulnerability, Send, SendFile, SessionManipulation, SessionSettings, SimpleFormat, SingleQuotes, SkipBeforeFilter, SprocketsPathTraversal, StripTags, SymbolDoSCVE, TemplateInjection, TranslateBug, UnsafeReflection, UnsafeReflectionMethods, ValidationRegex, VerbConfusion, WeakRSAKey, WithoutProtection, XMLDoS, YAMLParsing
 
 == Overview ==
 
 Controllers: 2
-Models: 3
+Models: 5
 Templates: 2
 Errors: 0
 Security Warnings: 4

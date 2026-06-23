@@ -1,0 +1,25 @@
+
+Source Code: |=================================================================|
+[31m/Users/dane/.claude/skills/rails-health-audit/examples/example-unhealthy-project/db/schema.rb:21 - always add db index (products => [owner_id])[0m
+[31m/Users/dane/.claude/skills/rails-health-audit/examples/example-unhealthy-project/db/schema.rb:30 - always add db index (tags => [product_id])[0m
+[31m/Users/dane/.claude/skills/rails-health-audit/examples/example-unhealthy-project/app/views/products/index.html.erb:14 - law of demeter[0m
+[31m/Users/dane/.claude/skills/rails-health-audit/examples/example-unhealthy-project/app/views/products/index.html.erb:16 - law of demeter[0m
+[31m/Users/dane/.claude/skills/rails-health-audit/examples/example-unhealthy-project/app/views/products/index.html.erb:13 - move code into model (product use_count > 2)[0m
+[31m/Users/dane/.claude/skills/rails-health-audit/examples/example-unhealthy-project/app/controllers/products_controller.rb:14 - move model logic into model (@product use_count > 4)[0m
+[31m/Users/dane/.claude/skills/rails-health-audit/examples/example-unhealthy-project/app/controllers/products_controller.rb:41 - move model logic into model (@product use_count > 4)[0m
+[31m/Users/dane/.claude/skills/rails-health-audit/examples/example-unhealthy-project/app/controllers/products_controller.rb:35 - Don't rescue Exception[0m
+[31m/Users/dane/.claude/skills/rails-health-audit/examples/example-unhealthy-project/app/models/product.rb:13 - remove unused methods (Product#owner_city)[0m
+[31m/Users/dane/.claude/skills/rails-health-audit/examples/example-unhealthy-project/app/models/product.rb:17 - remove unused methods (Product#owner_zip)[0m
+[31m/Users/dane/.claude/skills/rails-health-audit/examples/example-unhealthy-project/app/models/product.rb:22 - remove unused methods (Product#summary)[0m
+[31m/Users/dane/.claude/skills/rails-health-audit/examples/example-unhealthy-project/app/models/product.rb:26 - remove unused methods (Product#long_summary)[0m
+[31m/Users/dane/.claude/skills/rails-health-audit/examples/example-unhealthy-project/app/models/product.rb:31 - remove unused methods (Product#s)[0m
+[31m/Users/dane/.claude/skills/rails-health-audit/examples/example-unhealthy-project/app/models/report.rb:4 - remove unused methods (Report#first_match)[0m
+[31m/Users/dane/.claude/skills/rails-health-audit/examples/example-unhealthy-project/app/models/report.rb:9 - remove unused methods (Report#has_total?)[0m
+[31m/Users/dane/.claude/skills/rails-health-audit/examples/example-unhealthy-project/app/models/report.rb:14 - remove unused methods (Report#reverse_loop)[0m
+[31m/Users/dane/.claude/skills/rails-health-audit/examples/example-unhealthy-project/app/models/report.rb:19 - remove unused methods (Report#count_big)[0m
+[31m/Users/dane/.claude/skills/rails-health-audit/examples/example-unhealthy-project/app/models/report.rb:24 - remove unused methods (Report#flatten_all)[0m
+[31m/Users/dane/.claude/skills/rails-health-audit/examples/example-unhealthy-project/config/routes.rb:5 - restrict auto-generated routes products (only: [:create, :update, :index])[0m
+[32m
+Please go to https://rails-bestpractices.com to see more useful Rails Best Practices.[0m
+[31m
+Found 19 warnings.[0m

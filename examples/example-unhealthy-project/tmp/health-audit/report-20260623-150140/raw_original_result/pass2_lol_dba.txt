@@ -1,0 +1,9 @@
+* TIP: if you have a problem with the index name('index name too long'), you can
+solve with the :name option. Something like :name => 'my_index'.
+* run `rails g migration AddMissingIndexes` and add the following content:
+    class AddMissingIndexes < ActiveRecord::Migration
+      def change
+        add_index :products, :owner_id
+        add_index :tags, :product_id
+      end
+    end

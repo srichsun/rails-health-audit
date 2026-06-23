@@ -6,4 +6,4 @@
 [31mconfig/puma.rb:28[0m Hash#fetch with second argument is slower than Hash#fetch with block.
 [31mconfig/puma.rb:32[0m Hash#fetch with second argument is slower than Hash#fetch with block.
 
-[32m20 files inspected[0m, [31m5 offenses detected[0m
+[32m24 files inspected[0m, [31m5 offenses detected[0m

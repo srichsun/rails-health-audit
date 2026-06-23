@@ -1,4 +1,4 @@
-LicenseFinder::Bundler: [32mis active for '/private/tmp/example-unhealthy-project'[0m
+LicenseFinder::Bundler: [32mis active for '/Users/dane/.claude/skills/rails-health-audit/examples/example-unhealthy-project'[0m
 
 Dependencies that need approval:
 action_text-trix, 2.1.19, MIT

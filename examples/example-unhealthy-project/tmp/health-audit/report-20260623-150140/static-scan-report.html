@@ -28,7 +28,7 @@
 <body>
 <h1 id="rails-health-audit--example-unhealthy-project">Rails Health Audit — example-unhealthy-project</h1>
 
-<p><em>Generated 2026-06-23 14:25. Phase 1 (static scan). Full raw tool output is in <code>raw_original_result/</code>.</em></p>
+<p><em>Generated 2026-06-23 15:01. Phase 1 (static scan). Full raw tool output is in <code>raw_original_result/</code>.</em></p>
 
 <h2 id="overview-every-check-most-severe-first">1. Overview (every check, most severe first)</h2>
 
@@ -75,21 +75,21 @@
       <td>🟡 4</td>
       <td>Maintainability</td>
       <td>rubycritic</td>
-      <td>score 93.97, 29 smell(s)</td>
+      <td>score 95.48, 31 smell(s)</td>
       <td><code>raw_original_result/rubycritic.txt</code></td>
     </tr>
     <tr>
       <td>🟡 4</td>
       <td>Rails conventions</td>
       <td>rails_best_practices</td>
-      <td>15 warning(s)</td>
+      <td>19 warning(s)</td>
       <td><code>raw_original_result/rails_best_practices.txt</code></td>
     </tr>
     <tr>
       <td>⚪ 4</td>
       <td>Maintainability</td>
       <td>rubocop</td>
-      <td>23 offense(s)</td>
+      <td>27 offense(s)</td>
       <td><code>raw_original_result/rubocop.txt</code></td>
     </tr>
     <tr>
@@ -196,6 +196,14 @@ style-level findings into a single row. Use <code>&lt;br&gt;</code> for line bre
     </tr>
     <tr>
       <td>7</td>
+      <td>🔴</td>
+      <td><strong>Data integrity</strong> (active_record_doctor — runtime)<br />2 missing foreign keys (<code>products.owner_id</code>, <code>tags.product_id</code>); 2 columns need NOT NULL; <code>products.sku</code> needs a unique index.</td>
+      <td>Add migrations: <code>add_foreign_key</code>, <code>change_column_null</code>, <code>add_index … unique: true</code>. See the Phase 2 report.</td>
+      <td>M</td>
+      <td><code>raw_original_result/pass2_ar_doctor.txt</code></td>
+    </tr>
+    <tr>
+      <td>8</td>
       <td>🟡</td>
       <td><strong><code>rescue Exception</code></strong> (rails_best_practices)<br /><code>app/controllers/products_controller.rb:35</code> swallows every error, incl. signals.</td>
       <td>Rescue <code>StandardError</code> (or a specific class) and re-raise / report the rest.</td>
@@ -203,7 +211,7 @@ style-level findings into a single row. Use <code>&lt;br&gt;</code> for line bre
       <td><code>raw_original_result/rails_best_practices.txt</code></td>
     </tr>
     <tr>
-      <td>8</td>
+      <td>9</td>
       <td>🟡</td>
       <td><strong>Fat controller / logic in view</strong> (rails_best_practices)<br /><code>products_controller.rb:14,41</code> (<code>@product</code> used &gt;4×) and <code>index.html.erb:13</code>.</td>
       <td>Move create/update body into a service or model method; move the view conditional into a model helper.</td>
@@ -211,15 +219,23 @@ style-level findings into a single row. Use <code>&lt;br&gt;</code> for line bre
       <td><code>raw_original_result/rails_best_practices.txt</code></td>
     </tr>
     <tr>
-      <td>9</td>
+      <td>10</td>
       <td>🟡</td>
-      <td><strong>Maintainability smells</strong> (rubycritic, 29)<br /><code>app/models/product.rb</code> — Law of Demeter (<code>owner.address.city</code>), feature envy, complex <code>#s</code>.</td>
+      <td><strong>Missing indexes</strong> (lol_dba — runtime)<br />2 association columns (<code>owner_id</code>, <code>product_id</code>) have no index.</td>
+      <td><code>add_index</code> on each foreign-key column; pairs with the FK work in row 7.</td>
+      <td>S</td>
+      <td><code>raw_original_result/pass2_lol_dba.txt</code></td>
+    </tr>
+    <tr>
+      <td>11</td>
+      <td>🟡</td>
+      <td><strong>Maintainability smells</strong> (rubycritic, 31)<br /><code>app/models/product.rb</code> — Law of Demeter (<code>owner.address.city</code>), feature envy, complex <code>#s</code>.</td>
       <td>Add delegations (<code>delegate :city, to: :address</code>); rename/extract <code>#s</code>; de-duplicate the <code>create</code>/<code>update</code> blocks.</td>
       <td>M</td>
       <td><code>raw_original_result/rubycritic.txt</code></td>
     </tr>
     <tr>
-      <td>10</td>
+      <td>12</td>
       <td>🟡</td>
       <td><strong>Slow Ruby idioms</strong> (fasterer, 5)<br /><code>app/models/report.rb:6</code> (<code>select{}.first</code>→<code>detect</code>), <code>:16</code> (<code>reverse.each</code>→<code>reverse_each</code>); plus <code>config/*</code>.</td>
       <td>Swap to the faster idiom each line names — trivial, mechanical.</td>
@@ -227,9 +243,9 @@ style-level findings into a single row. Use <code>&lt;br&gt;</code> for line bre
       <td><code>raw_original_result/fasterer.txt</code></td>
     </tr>
     <tr>
-      <td>11</td>
+      <td>13</td>
       <td>⚪</td>
-      <td><strong>Style</strong> (rubocop 23 + erb_lint 8)<br />spacing, tag formatting, layout across <code>app/</code>.</td>
+      <td><strong>Style</strong> (rubocop 27 + erb_lint 8)<br />spacing, tag formatting, layout across <code>app/</code>.</td>
       <td>Auto-fix: <code>rubocop -A</code> and <code>erb_lint --autocorrect</code>, then commit the diff.</td>
       <td>S</td>
       <td><code>raw_original_result/rubocop.txt</code><br /><code>raw_original_result/erb_lint.txt</code></td>
@@ -237,14 +253,21 @@ style-level findings into a single row. Use <code>&lt;br&gt;</code> for line bre
   </tbody>
 </table>
 
-<h2 id="phase-2--runtime-checks-follow-up-need-app--db">3. Phase 2 — runtime checks (follow-up, need app + DB)</h2>
+<h2 id="phase-2--runtime-checks-need-app--db">3. Phase 2 — runtime checks (need app + DB)</h2>
 
-<p>These can’t be answered by reading code; run them in the project (see audit-dynamic.sh):</p>
+<p>For this example the app boots against its SQLite DB, so Phase 2 <strong>ran</strong> — see
+<a href="dynamic-scan-report.md"><code>dynamic-scan-report.md</code></a> in this folder. Results (folded into
+rows 7 and 10 above):</p>
 
 <ul>
-  <li><strong>Data correctness</strong> — <code>active_record_doctor</code> (missing FKs, NOT NULL, unique indexes, model/DB mismatch)</li>
-  <li><strong>Missing indexes</strong> — <code>lol_dba</code> (<code>db:find_indexes</code>)</li>
-  <li><strong>N+1 queries</strong> — <code>bullet</code> (dev/test) or <code>prosopite</code>; exercise app / run tests</li>
+  <li><strong>Data correctness</strong> — <code>active_record_doctor</code>: 2 missing FKs, 2 missing NOT NULL, 1 missing unique index</li>
+  <li><strong>Missing indexes</strong> — <code>lol_dba</code>: 2 unindexed association columns</li>
+</ul>
+
+<p>Still manual (need the app <em>exercised</em>, not just booted):</p>
+
+<ul>
+  <li><strong>N+1 queries</strong> — <code>bullet</code> (dev/test) or <code>prosopite</code>; exercise app / run tests — note the per-row <code>product.owner</code> lookup in <code>index.html.erb</code></li>
   <li><strong>Test coverage</strong> — <code>simplecov</code> → run the suite, read <code>coverage/index.html</code></li>
 </ul>
 </body>

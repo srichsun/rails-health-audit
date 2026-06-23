@@ -1,21 +1,20 @@
-RubyCritic can provide more feedback if you use a Git, Mercurial or Perforce repository. Churn will not be calculated.
 running flay smells
 
 running flog smells
-[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m
+[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m
 running reek smells
-[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m
+[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m
 running complexity
-[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m
+[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m
 running attributes
-[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m
+[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m
 running churn
-[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m
+[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m
 running simple_cov
-[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m
+[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m
 ApplicationController:
   Rating:       A
-  Churn:        0
+  Churn:        1
   Complexity:   0.0
   Duplication:  0
   Smells:       1
@@ -24,7 +23,7 @@ ApplicationController:
 
 ApplicationHelper:
   Rating:       A
-  Churn:        0
+  Churn:        1
   Complexity:   0.0
   Duplication:  0
   Smells:       1
@@ -33,35 +32,44 @@ ApplicationHelper:
 
 ApplicationRecord:
   Rating:       A
-  Churn:        0
+  Churn:        1
   Complexity:   0.0
   Duplication:  0
   Smells:       1
     * (IrresponsibleModule) ApplicationRecord has no descriptive comment
       - app/models/application_record.rb:1
 
-Product:
+Owner:
   Rating:       A
   Churn:        0
+  Complexity:   0.0
+  Duplication:  0
+  Smells:       1
+    * (IrresponsibleModule) Owner has no descriptive comment
+      - app/models/owner.rb:1
+
+Product:
+  Rating:       A
+  Churn:        1
   Complexity:   30.72
   Duplication:  0
   Smells:       5
     * (UncommunicativeMethodName) Product#s has the name 's'
-      - app/models/product.rb:25
-    * (UncommunicativeParameterName) Product#s has the parameter name 'x'
-      - app/models/product.rb:25
-    * (UncommunicativeVariableName) Product#s has the variable name 'i'
-      - app/models/product.rb:27
-    * (UncommunicativeVariableName) Product#s has the variable name 'r'
-      - app/models/product.rb:26
-      - app/models/product.rb:29
       - app/models/product.rb:31
+    * (UncommunicativeParameterName) Product#s has the parameter name 'x'
+      - app/models/product.rb:31
+    * (UncommunicativeVariableName) Product#s has the variable name 'i'
+      - app/models/product.rb:33
+    * (UncommunicativeVariableName) Product#s has the variable name 'r'
+      - app/models/product.rb:32
+      - app/models/product.rb:35
+      - app/models/product.rb:37
     * (UtilityFunction) Product#s doesn't depend on instance state (maybe move it to another class?)
-      - app/models/product.rb:25
+      - app/models/product.rb:31
 
 Report:
   Rating:       A
-  Churn:        0
+  Churn:        1
   Complexity:   15.91
   Duplication:  0
   Smells:       8
@@ -82,9 +90,18 @@ Report:
     * (UtilityFunction) Report#has_total? doesn't depend on instance state (maybe move it to another class?)
       - app/models/report.rb:9
 
+Tag:
+  Rating:       A
+  Churn:        0
+  Complexity:   0.0
+  Duplication:  0
+  Smells:       1
+    * (IrresponsibleModule) Tag has no descriptive comment
+      - app/models/tag.rb:1
+
 ProductsController:
   Rating:       B
-  Churn:        0
+  Churn:        1
   Complexity:   98.03
   Duplication:  0
   Smells:       13
@@ -117,4 +134,4 @@ ProductsController:
       - app/controllers/products_controller.rb:23
     * (UncommunicativeVariableName) ProductsController#update has the variable name 't'
       - app/controllers/products_controller.rb:47
-Score: 93.97
+Score: 95.48

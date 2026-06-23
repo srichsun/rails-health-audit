@@ -1,0 +1,18 @@
+### missing_unique_indexes (1)
+add a unique index on products(sku) - validating uniqueness in Product without an index can lead to duplicates
+
+### missing_non_null_constraint (2)
+add `NOT NULL` to products.name - models validates its presence but it's not non-NULL in the database
+add `NOT NULL` to tags.product_id - models validates its presence but it's not non-NULL in the database
+
+### missing_foreign_keys (2)
+create a foreign key on products.owner_id - looks like an association without a foreign key constraint
+create a foreign key on tags.product_id - looks like an association without a foreign key constraint
+
+### unindexed_foreign_keys (2)
+add an index on products(owner_id) - foreign keys are often used in database lookups and should be indexed for performance reasons
+add an index on tags(product_id) - foreign keys are often used in database lookups and should be indexed for performance reasons
+
+### incorrect_dependent_option (0)
+
+

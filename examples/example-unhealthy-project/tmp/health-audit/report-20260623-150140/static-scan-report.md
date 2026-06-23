@@ -1,6 +1,6 @@
 # Rails Health Audit — example-unhealthy-project
 
-_Generated 2026-06-23 14:25. Phase 1 (static scan). Full raw tool output is in `raw_original_result/`._
+_Generated 2026-06-23 15:01. Phase 1 (static scan). Full raw tool output is in `raw_original_result/`._
 
 ## 1. Overview (every check, most severe first)
 
@@ -10,9 +10,9 @@ _Generated 2026-06-23 14:25. Phase 1 (static scan). Full raw tool output is in `
 | 🔴 1 | Security | bundler-audit | 8 vulnerable advisory(ies) | `raw_original_result/bundler-audit.txt` |
 | 🔴 1 | Compliance | license_finder | 73 | `raw_original_result/license_finder.txt` |
 | 🟡 3 | Performance | fasterer | 5 speed suggestion(s) | `raw_original_result/fasterer.txt` |
-| 🟡 4 | Maintainability | rubycritic | score 93.97, 29 smell(s) | `raw_original_result/rubycritic.txt` |
-| 🟡 4 | Rails conventions | rails_best_practices | 15 warning(s) | `raw_original_result/rails_best_practices.txt` |
-| ⚪ 4 | Maintainability | rubocop | 23 offense(s) | `raw_original_result/rubocop.txt` |
+| 🟡 4 | Maintainability | rubycritic | score 95.48, 31 smell(s) | `raw_original_result/rubycritic.txt` |
+| 🟡 4 | Rails conventions | rails_best_practices | 19 warning(s) | `raw_original_result/rails_best_practices.txt` |
+| ⚪ 4 | Maintainability | rubocop | 27 offense(s) | `raw_original_result/rubocop.txt` |
 | ⚪ 4 | Maintainability | erb_lint | 8 ERB offense(s) | `raw_original_result/erb_lint.txt` |
 | ⚪ 5 | Tech debt | bundle outdated | 2 | `raw_original_result/outdated.txt` |
 
@@ -45,17 +45,24 @@ style-level findings into a single row. Use `<br>` for line breaks inside a cell
 | 4 | 🔴 | **Vulnerable gem: jwt 2.3.0** (bundler-audit, High)<br>CVE-2026-45363 — empty-key HMAC signature bypass. | Upgrade `gem "jwt", ">= 3.2.0"`, then `bundle update jwt`. | S | `raw_original_result/bundler-audit.txt` |
 | 5 | 🔴 | **Vulnerable gem: rexml 3.2.4** (bundler-audit, 7 advisories incl. High ReDoS GHSA-2rxp-v6pw-ch6m). | Upgrade `gem "rexml", ">= 3.3.9"`, then `bundle update rexml`. One bump clears all 7. | S | `raw_original_result/bundler-audit.txt` |
 | 6 | 🔴 | **License compliance** (license_finder)<br>73 dependencies have no approval decision. | Set an allowed-license policy; approve/replace anything copyleft (GPL) that conflicts with the product license. | M | `raw_original_result/license_finder.txt` |
-| 7 | 🟡 | **`rescue Exception`** (rails_best_practices)<br>`app/controllers/products_controller.rb:35` swallows every error, incl. signals. | Rescue `StandardError` (or a specific class) and re-raise / report the rest. | S | `raw_original_result/rails_best_practices.txt` |
-| 8 | 🟡 | **Fat controller / logic in view** (rails_best_practices)<br>`products_controller.rb:14,41` (`@product` used >4×) and `index.html.erb:13`. | Move create/update body into a service or model method; move the view conditional into a model helper. | M | `raw_original_result/rails_best_practices.txt` |
-| 9 | 🟡 | **Maintainability smells** (rubycritic, 29)<br>`app/models/product.rb` — Law of Demeter (`owner.address.city`), feature envy, complex `#s`. | Add delegations (`delegate :city, to: :address`); rename/extract `#s`; de-duplicate the `create`/`update` blocks. | M | `raw_original_result/rubycritic.txt` |
-| 10 | 🟡 | **Slow Ruby idioms** (fasterer, 5)<br>`app/models/report.rb:6` (`select{}.first`→`detect`), `:16` (`reverse.each`→`reverse_each`); plus `config/*`. | Swap to the faster idiom each line names — trivial, mechanical. | S | `raw_original_result/fasterer.txt` |
-| 11 | ⚪ | **Style** (rubocop 23 + erb_lint 8)<br>spacing, tag formatting, layout across `app/`. | Auto-fix: `rubocop -A` and `erb_lint --autocorrect`, then commit the diff. | S | `raw_original_result/rubocop.txt`<br>`raw_original_result/erb_lint.txt` |
+| 7 | 🔴 | **Data integrity** (active_record_doctor — runtime)<br>2 missing foreign keys (`products.owner_id`, `tags.product_id`); 2 columns need NOT NULL; `products.sku` needs a unique index. | Add migrations: `add_foreign_key`, `change_column_null`, `add_index … unique: true`. See the Phase 2 report. | M | `raw_original_result/pass2_ar_doctor.txt` |
+| 8 | 🟡 | **`rescue Exception`** (rails_best_practices)<br>`app/controllers/products_controller.rb:35` swallows every error, incl. signals. | Rescue `StandardError` (or a specific class) and re-raise / report the rest. | S | `raw_original_result/rails_best_practices.txt` |
+| 9 | 🟡 | **Fat controller / logic in view** (rails_best_practices)<br>`products_controller.rb:14,41` (`@product` used >4×) and `index.html.erb:13`. | Move create/update body into a service or model method; move the view conditional into a model helper. | M | `raw_original_result/rails_best_practices.txt` |
+| 10 | 🟡 | **Missing indexes** (lol_dba — runtime)<br>2 association columns (`owner_id`, `product_id`) have no index. | `add_index` on each foreign-key column; pairs with the FK work in row 7. | S | `raw_original_result/pass2_lol_dba.txt` |
+| 11 | 🟡 | **Maintainability smells** (rubycritic, 31)<br>`app/models/product.rb` — Law of Demeter (`owner.address.city`), feature envy, complex `#s`. | Add delegations (`delegate :city, to: :address`); rename/extract `#s`; de-duplicate the `create`/`update` blocks. | M | `raw_original_result/rubycritic.txt` |
+| 12 | 🟡 | **Slow Ruby idioms** (fasterer, 5)<br>`app/models/report.rb:6` (`select{}.first`→`detect`), `:16` (`reverse.each`→`reverse_each`); plus `config/*`. | Swap to the faster idiom each line names — trivial, mechanical. | S | `raw_original_result/fasterer.txt` |
+| 13 | ⚪ | **Style** (rubocop 27 + erb_lint 8)<br>spacing, tag formatting, layout across `app/`. | Auto-fix: `rubocop -A` and `erb_lint --autocorrect`, then commit the diff. | S | `raw_original_result/rubocop.txt`<br>`raw_original_result/erb_lint.txt` |
 
-## 3. Phase 2 — runtime checks (follow-up, need app + DB)
+## 3. Phase 2 — runtime checks (need app + DB)
 
-These can't be answered by reading code; run them in the project (see audit-dynamic.sh):
+For this example the app boots against its SQLite DB, so Phase 2 **ran** — see
+[`dynamic-scan-report.md`](dynamic-scan-report.md) in this folder. Results (folded into
+rows 7 and 10 above):
 
-- **Data correctness** — `active_record_doctor` (missing FKs, NOT NULL, unique indexes, model/DB mismatch)
-- **Missing indexes** — `lol_dba` (`db:find_indexes`)
-- **N+1 queries** — `bullet` (dev/test) or `prosopite`; exercise app / run tests
+- **Data correctness** — `active_record_doctor`: 2 missing FKs, 2 missing NOT NULL, 1 missing unique index
+- **Missing indexes** — `lol_dba`: 2 unindexed association columns
+
+Still manual (need the app *exercised*, not just booted):
+
+- **N+1 queries** — `bullet` (dev/test) or `prosopite`; exercise app / run tests — note the per-row `product.owner` lookup in `index.html.erb`
 - **Test coverage** — `simplecov` → run the suite, read `coverage/index.html`
