@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Rails Health Audit — optional export of the markdown report to HTML / PDF.
-# Usage: bash export.sh /path/to/rails/project [html|pdf|both]   (default: html)
+# Usage: bash export.sh /path/to/rails/project [html|pdf|both]   (default: both)
+# Default ships all three side by side: the source .md plus rendered .html and .pdf.
 #
 # Markdown stays the source of truth (editable, diffable, zero-dependency). This is just
 # a polished, shareable rendering on top:
@@ -10,7 +11,7 @@ set -uo pipefail
 
 PROJECT="${1:-$PWD}"
 PROJECT="$(cd "$PROJECT" 2>/dev/null && pwd)" || { echo "No such directory: ${1:-}"; exit 1; }
-FORMAT="${2:-html}"
+FORMAT="${2:-both}"
 
 OUT="$PROJECT/tmp/health-audit"
 [[ -d "$OUT" ]] || { echo "No report found at $OUT — run audit-static.sh first."; exit 1; }

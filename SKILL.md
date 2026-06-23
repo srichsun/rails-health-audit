@@ -118,17 +118,20 @@ Keep it focused — every 🔴/🟡 plus one ⚪ row, ordered most-severe-first.
 intentional issues) for a worked example — its filled report is under
 `tmp/health-audit/report-*/static-scan-report.md`.
 
-### Phase 1c — export a PDF (do this once the Action plan is filled)
+### Phase 1c — export the report (do this once the Action plan is filled)
 
-Once the table is filled, produce a shareable PDF so the deliverable is ready to hand over:
+Once the table is filled, produce the shareable copies so the deliverable is ready to
+hand over. The default ships all three side by side — the source `.md` plus rendered
+`.html` and `.pdf`:
 
 ```
-bash ~/.claude/skills/rails-health-audit/scripts/export.sh <project> pdf
+bash ~/.claude/skills/rails-health-audit/scripts/export.sh <project>
 ```
 
-This renders the latest (now-filled) report to PDF next to it in
-`tmp/health-audit/`. Do this **after** filling the Action plan, never before — a PDF of
-the blank template is worthless. Tell the user where the PDF is.
+This renders the latest (now-filled) report next to it inside its
+`tmp/health-audit/report-<timestamp>/` folder (`static-scan-report.md` / `.html` / `.pdf`).
+Do this **after** filling the Action plan, never before — a PDF of the blank template is
+worthless. Tell the user where the files are.
 
 ## Notes
 
