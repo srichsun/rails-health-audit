@@ -136,8 +136,8 @@ outdated) produces a real finding, not a "skipped". Point the audit at it (Step 
 bash scripts/audit.sh examples/example-unhealthy-project
 ```
 
-That writes the `.md` report. Fill its Action plan (Step 2), then render and open the PDF
-— `open` only works **after** `export.sh` has produced it (Step 3):
+Fill its Action plan (Step 2), then render and open the PDF — `open` only works **after**
+`export.sh` has produced it (Step 3):
 
 ```sh
 bash scripts/export.sh examples/example-unhealthy-project
@@ -156,7 +156,7 @@ A real-world walkthrough (a legacy Rails 4.1 app) is in
 
 ## ⚠️ Limitations
 
-- `audit-dynamic.sh` automates the data-correctness and indexing checks, but the N+1 and coverage
+- The runtime scan automates the data-correctness and indexing checks, but the N+1 and coverage
   checks still need the app *exercised* (requests / the test suite), so those stay manual.
 - `bundle outdated` needs the project's own Ruby; it is skipped with a note when the
   ambient Ruby does not match the project's pinned version.

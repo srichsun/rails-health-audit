@@ -129,8 +129,8 @@ repo 內附一個**真的、故意寫壞**的 Rails 8 app（`example-unhealthy-p
 bash scripts/audit.sh examples/example-unhealthy-project
 ```
 
-這會產生 `.md` 報告。填好它的 Action plan（步驟二）後，再產生並打開 PDF——`open` 只有在
-`export.sh` 把 PDF 產出來（步驟三）**之後**才打得開：
+填好它的 Action plan（步驟二）後，再產生並打開 PDF——`open` 只有在 `export.sh` 把 PDF
+產出來（步驟三）**之後**才打得開：
 
 ```sh
 bash scripts/export.sh examples/example-unhealthy-project
@@ -150,7 +150,7 @@ open examples/example-unhealthy-project/tmp/health-audit/report-*/health-audit-r
 
 ## ⚠️ 限制
 
-- `audit-dynamic.sh` 把資料正確性與索引檢查自動化了，但 N+1 與覆蓋率仍需 app 被**實際執行到**
+- runtime 掃描把資料正確性與索引檢查自動化了，但 N+1 與覆蓋率仍需 app 被**實際執行到**
   （請求 / 測試），所以那兩項維持手動。
 - `bundle outdated` 需要專案自己的 Ruby；當環境 Ruby 與專案釘死的版本不符時，
   會跳過並附註說明。
