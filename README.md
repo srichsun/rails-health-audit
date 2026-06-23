@@ -183,29 +183,26 @@ injection outranks ten thousand style offenses.
 
 ### Two passes: a quick read, then a deeper look
 
-**Pass 1 — the static scan: read the code (the script does this for you, automatically).**
-It only _reads_ your source files and your gem list. It never starts your app, never
-touches your database, and installs nothing into your project. So it is safe to run on
-any codebase at any time, and it is fast. This pass covers security, licensing,
-maintainability, conventions, and tech debt. (Tools run from your installed binary, or
-are fetched on the fly with `gem exec` if you don't have them — Ruby 3.2+.)
+The audit runs in two passes.
 
-**Pass 2 — the runtime scan: run the app.** Three things can't be answered by reading
-code; the app has to run against a real, migrated database:
+**Pass 1 · static scan — read the code** — automatic, always safe.
+It only _reads_ your source and gem list: never starts the app, never touches the
+database, installs nothing. Fast, and safe on any codebase at any time. Covers security,
+licensing, maintainability, conventions, and tech debt. (Tools run from your installed
+binary, or via `gem exec` if you don't have them — Ruby 3.2+.)
 
-- Is the data safe? — missing foreign keys, indexes, `NOT NULL`, unique constraints
-  (`active_record_doctor`, `lol_dba`)
-- Are there slow N+1 queries? (`bullet` / `prosopite`)
-- How much of the code do the tests actually cover? (`simplecov`)
+**Pass 2 · runtime scan — boot the app** — best-effort, needs a migrated database.
+Three things reading the code can't answer:
 
-`scripts/audit-dynamic.sh` automates the first group: it boots the app and runs the
-data-correctness and indexing detectors through a **temporary** bundle, so the project's
-own `Gemfile` / `Gemfile.lock` are never touched. The N+1 and coverage checks still need
-the app *exercised* (requests, or the test suite) — they only surface on code paths that
-actually execute — so they stay documented follow-ups.
+| Question | Tools | In this skill |
+|----------|-------|---------------|
+| Does the DB enforce what the models assume? (FKs, `NOT NULL`, unique, indexes) | `active_record_doctor`, `lol_dba` | ✅ run automatically |
+| Are there slow N+1 queries? | `bullet` / `prosopite` | ⏳ manual — needs the app exercised |
+| How much do the tests actually cover? | `simplecov` | ⏳ manual — needs the test suite run |
 
-In one line: **Pass 1 reads the code (always safe to run); Pass 2 boots the app to catch
-what reading can't (needs the DB set up).**
+The automated checks run through a **temporary** bundle (`scripts/audit-dynamic.sh`), so
+your `Gemfile` / `Gemfile.lock` are never touched. The manual ones only surface on code
+paths that actually execute, so they stay documented follow-ups.
 
 ### What each tool checks
 
