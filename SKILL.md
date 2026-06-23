@@ -115,6 +115,18 @@ Write the plan as a **table, in English**, with these columns:
 Keep it focused — every 🔴/🟡 plus one ⚪ row, ordered most-severe-first. See
 `examples/legacy-project/sample-static-scan-report.md` for a worked example.
 
+### Phase 1c — export a PDF (do this once the Action plan is filled)
+
+Once the table is filled, produce a shareable PDF so the deliverable is ready to hand over:
+
+```
+bash ~/.claude/skills/rails-health-audit/scripts/export.sh <project> pdf
+```
+
+This renders the latest (now-filled) report to PDF next to it in
+`tmp/health-audit/`. Do this **after** filling the Action plan, never before — a PDF of
+the blank template is worthless. Tell the user where the PDF is.
+
 ## Notes
 
 - If the target is not a Rails app (no `Gemfile` + `config/application.rb`), say so and stop.
