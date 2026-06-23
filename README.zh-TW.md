@@ -2,11 +2,13 @@
 
 [English](README.md) | **繁體中文**
 
-一套可重複使用的方法，用來評估既有 Rails 專案的健康度，並把結果轉成一份
-**排好優先序的改善計畫**——「用工具 _Y_ 找出問題 _X_，再用方法 _Z_ 修復」，
-依嚴重程度由高到低排列。
+找出 legacy 或剛接手的 Rails codebase 裡**不健康**的地方，把它變成一份
+**排好嚴重度、先修哪個**的 action plan——「用工具 _Y_ 找出問題 _X_，再用方法 _Z_ 修」，
+最嚴重的排前面。
 
-它打包成一個 [Claude Code](https://claude.com/claude-code) skill，但核心只是一支
+它編排那些公認的工具（brakeman、bundler-audit、rubycritic 等），再加上 static 工具與
+CI 都做不到的 **runtime 資料正確性檢查**（缺 FK / index / `NOT NULL`）——而且對你的專案
+**零足跡**。打包成 [Claude Code](https://claude.com/claude-code) skill，但核心只是一支
 可以單獨執行的 shell 腳本。
 
 ---

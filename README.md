@@ -2,12 +2,15 @@
 
 **English** | [繁體中文](README.zh-TW.md)
 
-A repeatable way to assess the health of an existing Rails codebase and turn the
-result into a **prioritized action plan** — "find problem _X_ with tool _Y_, fix it
-with method _Z_", ordered most-severe-first.
+Find what's **unhealthy** in a legacy or inherited Rails codebase and turn it into a
+**severity-ranked, fix-first action plan** — "find problem _X_ with tool _Y_, fix it with
+method _Z_", most-severe-first.
 
-It is packaged as a [Claude Code](https://claude.com/claude-code) skill, but the core
-is a plain shell script you can run on its own.
+It orchestrates the canonical tools (brakeman, bundler-audit, rubycritic & friends) plus
+the **runtime data-correctness checks** (missing FKs / indexes / `NOT NULL`) that static
+tools and CI skip — all with **zero footprint** on your project. Packaged as a
+[Claude Code](https://claude.com/claude-code) skill, but the core is a plain shell script
+you can run on its own.
 
 ---
 
