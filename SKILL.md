@@ -41,6 +41,11 @@ reinvention of those tools.
 
 ## How to run
 
+> **The audit is ALWAYS two steps: run the script, then fill the Action plan.**
+> The script alone only produces a blank template. When this skill runs, you MUST
+> do both steps before reporting back — a scan without a filled Action plan is
+> considered incomplete. The plan is the whole point of this skill.
+
 ### Phase 1 — static scan (works on any project, no app changes)
 
 ```
@@ -55,6 +60,8 @@ freshness (bundle outdated)**. It writes a ranked report to
 Tools are invoked via the installed binary, falling back to `gem exec` (Ruby 3.2+)
 so nothing is permanently added to the target project.
 
+**Then immediately do Phase 1b below — don't stop at the raw numbers.**
+
 ### Phase 2 — runtime scan (needs the app booting + a DB)
 
 These need to load the app against its database. `scripts/audit-dynamic.sh <project>` automates
@@ -68,12 +75,13 @@ Only run `audit-dynamic.sh` when the project's DB is set up and migrated; it wri
 The N+1 (`bullet`/`prosopite`) and coverage (`simplecov`) checks need the app *exercised*
 (requests / test suite), so leave them as documented follow-ups.
 
-## Turning the scan into a plan (do this — don't leave it blank)
+### Phase 1b — fill the Action plan (REQUIRED, not optional)
 
 `audit-static.sh` only writes an empty Action plan template; the prioritization is the judgment
-this skill exists for. **After running the scan, read the raw logs in
-`tmp/health-audit/raw/` and fill in the `## Action plan` section of `static-scan-report.md`** before
-reporting back. How to prioritize:
+this skill exists for. **As soon as the scan finishes, read the raw logs in
+`tmp/health-audit/raw/` and replace the empty `## Action plan` section of
+`static-scan-report.md` with a real, ranked plan** — then report the filled plan to the
+user. Never hand back the blank template. How to prioritize:
 
 1. **Business impact over volume** — order security → data correctness → performance →
    maintainability → style. A SQL injection outranks 9,000 style offenses.
@@ -86,7 +94,7 @@ reporting back. How to prioritize:
 
 Write each item as **[Category] problem (found by tool) → concrete fix → rough effort
 (S/M/L)**. Keep it to the top ~6–10 so it is actionable, not a dump. See
-`examples/legacy_blog/SAMPLE_static-scan-report.md` for a worked example.
+`examples/legacy_blog/sample-static-scan-report.md` for a worked example.
 
 ## Notes
 
