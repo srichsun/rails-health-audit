@@ -76,80 +76,51 @@ Requirements: Ruby 3.2+ (for `gem exec`). The analysis tools are fetched on dema
 
 ## 🚀 Usage
 
-**With Claude Code (easiest).** Just ask in plain language — Claude picks up the skill,
-runs the scan, and does the triage for you:
+**With Claude Code (easiest)** — ask in plain language and Claude runs all three steps below for you:
 
 > "Audit this Rails project's health"
 
-Or invoke it explicitly as a slash command:
+Or invoke it explicitly: `/rails-health-audit /path/to/rails/project`.
 
-```
-/rails-health-audit /path/to/rails/project
-```
+**Standalone**, three steps take you from code to a prioritized report:
 
-**Standalone — one command.** Run it directly (no Claude Code needed):
+### Step 1 — scan
+One command runs the static scan, then best-effort the runtime scan — the latter only if
+the app boots against a migrated database (otherwise it's skipped, and the report's "Still
+to run" section says how to enable it; set up the DB first to fold the runtime results in):
 
 ```sh
 bash scripts/audit.sh /path/to/rails/project
 ```
 
-`audit.sh` runs the static scan, then best-effort runs the runtime scan — the latter only
-if the app boots against a migrated database; otherwise it's skipped and the report's
-"Still to run" section says how to enable it. (It calls `audit-static.sh` and
-`audit-dynamic.sh` internally — the only command you run is `audit.sh`.) So to get the
-runtime results folded in, set up and migrate the project's DB before running it.
-
-It writes one ranked report to
-`<project>/tmp/health-audit/report-<timestamp>/health-audit-report.md`, the raw tool
-output to that run's `raw_original_result/`, and prints a summary to the terminal.
-
-Then **triage**: read the raw logs, pick the highest-impact items, and fill the report's
-**Action plan** — one line each: `[Category] problem → fix → effort`. (Inside Claude Code
-this step is done for you.) Finally, **export a shareable PDF** (see **Output** below).
-
----
-
-## 📁 Output
-
-Everything lands under `<project>/tmp/health-audit/` — git-ignored in a real project (it's
-generated output), though this repo commits one sample so you can preview it. The scripts
-also print the report path to the terminal when they finish.
-
-Each run gets its own timestamped `report-<timestamp>/` folder, so a new run never
-overwrites an older one — keep them to diff before/after.
+It writes **one report** — sections `1. Overview`, `2. Action plan`, `3. Still to run`,
+with the runtime findings folded into the Overview — plus every tool's raw output, in a
+per-run folder:
 
 ```
-<project>/tmp/health-audit/
-└── report-<timestamp>/                  # one folder per run
-    ├── health-audit-report.md           # working source: Overview + Action plan + Still to run
-    ├── health-audit-report.pdf           # the shareable deliverable (from export.sh)
-    └── raw_original_result/             # full, unprocessed output from every tool
-        ├── brakeman.txt
-        ├── bundler-audit.txt
-        ├── license_finder.txt
-        ├── rubocop.txt
-        ├── erb_lint.txt
-        ├── rubycritic.txt
-        ├── fasterer.txt
-        ├── rails_best_practices.txt
-        ├── outdated.txt
-        ├── active_record_doctor.txt     # runtime (Pass 2) — only when the app + DB ran
-        └── lol_dba.txt                  # runtime (Pass 2) — only when the app + DB ran
+<project>/tmp/health-audit/report-<timestamp>/   # git-ignored — generated output
+├── health-audit-report.md       # the report (editable source you act on)
+├── health-audit-report.pdf      # shareable copy, produced in Step 3
+└── raw_original_result/         # full output: brakeman.txt … + active_record_doctor.txt, lol_dba.txt (runtime)
 ```
 
-The `health-audit-report.md` is the one you read and act on. It has three sections —
-"## 1. Overview", "## 2. Action plan", and "## 3. Still to run" — the runtime results
-(`active_record_doctor`, `lol_dba`) fold straight into the Overview table and Action plan,
-and section 3 just lists what's left to run manually. Each Action plan item cites
-the `file:line` and the `raw_original_result/…txt` it came from, so findings are traceable.
+### Step 2 — fill the Action plan (the judgment step)
+Read the raw logs and fill the **Action plan** table: every 🔴/🟡 finding one row,
+most-severe-first, each citing `file:line` and its raw source. This prioritization is what
+the skill exists for. Inside Claude Code it's done for you.
 
-Want a shareable copy? `bash scripts/export.sh <project>` renders `health-audit-report.md`
-to `health-audit-report.pdf` (the `.md` stays the editable source of truth).
+### Step 3 — export the PDF
+Once the plan is filled:
 
-**See what a finished report looks like** without running anything — a filled sample is
-committed in the repo:
+```sh
+bash scripts/export.sh /path/to/rails/project
+```
+
+renders `health-audit-report.md` → `health-audit-report.pdf` (the `.md` stays the editable source).
+
+**See what a finished report looks like** — a filled sample is committed:
 **[📄 example health-audit-report.pdf](examples/example-unhealthy-project/tmp/health-audit/report-20260623-154905/health-audit-report.pdf)**
-(Overview + a fully filled Action plan), rendered from
+(Overview + a fully filled Action plan), from
 [its markdown source](examples/example-unhealthy-project/tmp/health-audit/report-20260623-154905/health-audit-report.md).
 
 ---
@@ -168,7 +139,7 @@ open examples/example-unhealthy-project/tmp/health-audit/report-*/health-audit-r
 See [`examples/example-unhealthy-project/README.md`](examples/example-unhealthy-project/README.md)
 for the list of problems planted in it — or preview the committed
 [📄 sample report](examples/example-unhealthy-project/tmp/health-audit/report-20260623-154905/health-audit-report.pdf)
-(also linked under **Output** above).
+(also linked under **Usage** above).
 
 A real-world walkthrough (a legacy Rails 4.1 app) is in
 [`docs/case-study-legacy-rails.md`](docs/case-study-legacy-rails.md).

@@ -71,75 +71,47 @@ git clone https://github.com/srichsun/rails-health-audit
 
 ## 🚀 使用方式
 
-**在 Claude Code 裡（最簡單）。** 直接用白話講，Claude 會自動拿出這個 skill、
-跑掃描、還幫你排優先序：
+**在 Claude Code 裡（最簡單）**——用白話講，Claude 會幫你把下面三步都跑完：
 
 > 「幫我檢查這個 Rails 專案的健康度」
 
-或用斜線指令明確叫它：
+或用斜線指令明確叫它：`/rails-health-audit /path/to/rails/project`。
 
-```
-/rails-health-audit /path/to/rails/project
-```
+**獨立使用**的話，三步驟從程式碼走到一份排好優先序的報告：
 
-**獨立使用——一道指令。** 直接跑（不需要 Claude Code）：
+### 步驟一——掃描
+一道指令會先跑靜態掃描，再盡力（best-effort）跑 runtime 掃描——後者只有在 app 能對已
+migrate 的資料庫開機時才跑（否則自動跳過，報告會說明怎麼啟用；想把 runtime 結果一起併進來，
+先把 DB 設定好）：
 
 ```sh
 bash scripts/audit.sh /path/to/rails/project
 ```
 
-`audit.sh` 會先跑靜態掃描，接著盡力（best-effort）跑 runtime 掃描——後者只有在 app 能對
-已 migrate 的資料庫開機時才跑；否則會自動跳過，報告的「Still to run」段會說明怎麼啟用。
-（它內部會呼叫 `audit-static.sh` 與 `audit-dynamic.sh`，但你只要跑 `audit.sh`。）所以想把
-runtime 結果一起併進報告，跑之前先把專案的資料庫設定好、migrate 好。
-
-它會把排序後的單一報告寫到
-`<project>/tmp/health-audit/report-<timestamp>/health-audit-report.md`，把原始工具輸出
-寫到該次的 `raw_original_result/`，並把摘要印在終端機。
-
-接著 **排優先序（triage）**：讀那些 raw log、挑出影響最大的項目，把報告的
-**Action plan** 填好——每行一條：`[類別] 問題 → 修法 → 工時`。（在 Claude Code 裡這步會
-幫你做。）最後 **匯出可分享的 PDF**（見下方 **Output**）。
-
----
-
-## 📁 產出檔案在哪
-
-全部都產在 `<project>/tmp/health-audit/` 底下——在真實專案裡是 git-ignored 的產物，不過
-這個 repo 故意 commit 一份範例讓你預覽。腳本跑完也會在終端機印出報告路徑。
-
-每次跑都帶 timestamp，各自一個 `report-<timestamp>/` 資料夾，新的一次不會蓋掉舊的——
-留著就能前後對比 diff。
+它會產出**單一報告**——分「1. Overview」「2. Action plan」「3. Still to run」三節，
+runtime 結果會併進 Overview——外加每個工具的原始輸出，都放在一個 per-run 資料夾：
 
 ```
-<project>/tmp/health-audit/
-└── report-<timestamp>/                  # 一次跑一個資料夾
-    ├── health-audit-report.md           # 工作來源：Overview + Action plan + Still to run
-    ├── health-audit-report.pdf           # 可分享的成品（由 export.sh 產生）
-    └── raw_original_result/             # 每個工具的完整原始輸出
-        ├── brakeman.txt
-        ├── bundler-audit.txt
-        ├── license_finder.txt
-        ├── rubocop.txt
-        ├── erb_lint.txt
-        ├── rubycritic.txt
-        ├── fasterer.txt
-        ├── rails_best_practices.txt
-        ├── outdated.txt
-        ├── active_record_doctor.txt     # runtime（第二輪）——app + DB 有跑才會有
-        └── lol_dba.txt                  # runtime（第二輪）——app + DB 有跑才會有
+<project>/tmp/health-audit/report-<timestamp>/   # git-ignored，是產物
+├── health-audit-report.md       # 報告本體（可編輯的來源，你拿來行動的那份）
+├── health-audit-report.pdf      # 可分享版，步驟三產生
+└── raw_original_result/         # 完整原始輸出：brakeman.txt …＋ active_record_doctor.txt、lol_dba.txt（runtime）
 ```
 
-`health-audit-report.md` 是你拿來讀、拿來行動的那份。它有三節——「## 1. Overview」、
-「## 2. Action plan」、「## 3. Still to run」——runtime 結果（`active_record_doctor`、
-`lol_dba`）會直接併進 Overview 表格與 Action plan，第三節只列還要手動跑的項目。
-每條 Action plan 都標了 `file:line` 跟它來自哪個 `raw_original_result/…txt`，
-所以每個發現都可以追溯。
+### 步驟二——填 Action plan（判斷的那一步）
+讀那些 raw log，把 **Action plan** 表填好：每個 🔴/🟡 finding 一列、最嚴重的排前面、
+各自標上 `file:line` 跟原始來源。這就是這個 skill 存在的價值。在 Claude Code 裡這步會幫你做。
 
-想要可分享的檔案？`bash scripts/export.sh <project>` 會把 `health-audit-report.md`
-轉成 `health-audit-report.pdf`（`.md` 仍是可編輯的來源）。
+### 步驟三——匯出 PDF
+計畫填好後：
 
-**想先看跑出來的報告長怎樣**、又不想實際跑？repo 內附一份已填好的範例：
+```sh
+bash scripts/export.sh /path/to/rails/project
+```
+
+會把 `health-audit-report.md` 轉成 `health-audit-report.pdf`（`.md` 仍是可編輯的來源）。
+
+**想先看跑完長怎樣**——repo 內附一份已填好的範例：
 **[📄 範例 health-audit-report.pdf](examples/example-unhealthy-project/tmp/health-audit/report-20260623-154905/health-audit-report.pdf)**
 （Overview + 已完整填好的 Action plan），由
 [markdown 來源](examples/example-unhealthy-project/tmp/health-audit/report-20260623-154905/health-audit-report.md)匯出。
@@ -161,7 +133,7 @@ open examples/example-unhealthy-project/tmp/health-audit/report-*/health-audit-r
 [`examples/example-unhealthy-project/README.md`](examples/example-unhealthy-project/README.md)；
 或直接預覽已提交的
 [📄 範例報告](examples/example-unhealthy-project/tmp/health-audit/report-20260623-154905/health-audit-report.pdf)
-（上方 **Output** 段也有連結）。
+（上方 **使用方式** 段也有連結）。
 
 一份真實案例的完整解說（一個 legacy Rails 4.1 app）在
 [`docs/case-study-legacy-rails.zh-TW.md`](docs/case-study-legacy-rails.zh-TW.md)。
