@@ -276,9 +276,8 @@ open examples/example-unhealthy-project/tmp/health-audit/report-*/health-audit-r
 
 Want to see what you get before running anything? A committed sample is in the repo —
 **[📄 example health-audit-report.pdf](examples/example-unhealthy-project/tmp/health-audit/report-20260623-154905/health-audit-report.pdf)**
-(Overview + a fully filled Action plan, exported from
-[the markdown source](examples/example-unhealthy-project/tmp/health-audit/report-20260623-154905/health-audit-report.md)).
-See [`examples/example-unhealthy-project/README.md`](examples/example-unhealthy-project/README.md)
+(Overview + a fully filled Action plan). See
+[`examples/example-unhealthy-project/README.md`](examples/example-unhealthy-project/README.md)
 for the list of problems planted in it.
 
 A real-world walkthrough (a legacy Rails 4.1 app) is in
