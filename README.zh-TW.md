@@ -195,20 +195,18 @@ git clone https://github.com/srichsun/rails-health-audit
 bash scripts/audit.sh /path/to/rails/project
 ```
 
-`audit.sh` 會先跑靜態掃描，接著盡力（best-effort）跑 runtime 掃描——只有在 app 能開機、
-而且資料庫已 migrate 時才跑；否則 runtime 階段會自動跳過，報告裡也會說明怎麼啟用它。
-（它內部會呼叫 `audit-static.sh` 與 `audit-dynamic.sh`，但你要跑的指令是 `audit.sh`。）
+`audit.sh` 會先跑靜態掃描，接著盡力（best-effort）跑 runtime 掃描——後者只有在 app 能對
+已 migrate 的資料庫開機時才跑；否則會自動跳過，報告的「Still to run」段會說明怎麼啟用。
+（它內部會呼叫 `audit-static.sh` 與 `audit-dynamic.sh`，但你只要跑 `audit.sh`。）所以想把
+runtime 結果一起併進報告，跑之前先把專案的資料庫設定好、migrate 好。
 
-不管哪種方式，它都會把排序後的單一報告寫到
-`<project>/tmp/health-audit/report-<timestamp>/health-audit-report.md`，並把每個工具的
-完整原始輸出寫到該次的 `raw_original_result/`。摘要會印在終端機。
+它會把排序後的單一報告寫到
+`<project>/tmp/health-audit/report-<timestamp>/health-audit-report.md`，把原始工具輸出
+寫到該次的 `raw_original_result/`，並把摘要印在終端機。
 
-接著排優先序（triage）：讀那些 raw log、挑出影響最大的前幾項，把報告裡的
-**Action plan** 區塊填好——每行一條：`[類別] 問題 → 修法 → 工時`。
-（在 Claude Code 裡，這個排優先序的步驟可以直接從 raw log 幫你完成。）
-
-想把 runtime（第二輪）結果一起併進報告，請在跑 `audit.sh` 前先把專案的資料庫設定好、
-migrate 好；如果 DB 還沒準備好，runtime 階段會被跳過，報告裡只會有靜態結果。
+接著 **排優先序（triage）**：讀那些 raw log、挑出影響最大的項目，把報告的
+**Action plan** 填好——每行一條：`[類別] 問題 → 修法 → 工時`。（在 Claude Code 裡這步會
+幫你做。）最後 **匯出可分享的 PDF**（見下方 **Output**）。
 
 ---
 
@@ -223,7 +221,7 @@ migrate 好；如果 DB 還沒準備好，runtime 階段會被跳過，報告裡
 ```
 <project>/tmp/health-audit/
 └── report-<timestamp>/                  # 一次跑一個資料夾
-    ├── health-audit-report.md           # 工作來源：總覽 + Action plan + 第三節 runtime 檢查
+    ├── health-audit-report.md           # 工作來源：Overview + Action plan + Still to run
     ├── health-audit-report.pdf           # 可分享的成品（由 export.sh 產生）
     └── raw_original_result/             # 每個工具的完整原始輸出
         ├── brakeman.txt
@@ -234,7 +232,9 @@ migrate 好；如果 DB 還沒準備好，runtime 階段會被跳過，報告裡
         ├── rubycritic.txt
         ├── fasterer.txt
         ├── rails_best_practices.txt
-        └── outdated.txt
+        ├── outdated.txt
+        ├── active_record_doctor.txt     # runtime（第二輪）——app + DB 有跑才會有
+        └── lol_dba.txt                  # runtime（第二輪）——app + DB 有跑才會有
 ```
 
 `health-audit-report.md` 是你拿來讀、拿來行動的那份。它有三節——「## 1. Overview」、
@@ -259,11 +259,12 @@ bash scripts/audit.sh examples/example-unhealthy-project
 open examples/example-unhealthy-project/tmp/health-audit/report-*/health-audit-report.pdf
 ```
 
+想先看跑出來長怎樣，不用實際跑？repo 內附一份已提交的範例——
+**[📄 範例 health-audit-report.pdf](examples/example-unhealthy-project/tmp/health-audit/report-20260623-154905/health-audit-report.pdf)**
+（Overview + 已完整填好的 Action plan，由
+[markdown 來源](examples/example-unhealthy-project/tmp/health-audit/report-20260623-154905/health-audit-report.md)匯出）。
 範例裡植入了哪些問題，見
-[`examples/example-unhealthy-project/README.md`](examples/example-unhealthy-project/README.md)；
-或者不用跑，直接看已提交的輸出快照
-[`examples/example-unhealthy-project/tmp/health-audit/`](examples/example-unhealthy-project/tmp/health-audit/)
-（一份 Action plan 已填好的 `report-<timestamp>/health-audit-report.pdf`）。
+[`examples/example-unhealthy-project/README.md`](examples/example-unhealthy-project/README.md)。
 
 一份真實案例的完整解說（一個 legacy Rails 4.1 app）在
 [`docs/case-study-legacy-rails.zh-TW.md`](docs/case-study-legacy-rails.zh-TW.md)。

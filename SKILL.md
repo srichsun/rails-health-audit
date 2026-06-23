@@ -115,8 +115,8 @@ intentional issues) for a worked example — its exported report is at
 
 ### Step 3 — export the PDF (do this once the Action plan is filled)
 
-Once the table is filled, produce the shareable PDF (the default, and the only output —
-the `.md` stays as the editable source):
+Once the table is filled, produce the shareable PDF (the `.md` stays as the editable
+source it's rendered from):
 
 ```
 bash ~/.claude/skills/rails-health-audit/scripts/export.sh <project>

@@ -207,23 +207,19 @@ Or invoke it explicitly as a slash command:
 bash scripts/audit.sh /path/to/rails/project
 ```
 
-`audit.sh` runs the static scan, then best-effort runs the runtime scan — only if the app
-boots and its database is migrated; otherwise the runtime phase is skipped automatically
-and the report explains how to enable it. (Internally it calls `audit-static.sh` and
-`audit-dynamic.sh`, but the command you run is `audit.sh`.)
+`audit.sh` runs the static scan, then best-effort runs the runtime scan — the latter only
+if the app boots against a migrated database; otherwise it's skipped and the report's
+"Still to run" section says how to enable it. (It calls `audit-static.sh` and
+`audit-dynamic.sh` internally — the only command you run is `audit.sh`.) So to get the
+runtime results folded in, set up and migrate the project's DB before running it.
 
-Either way, it writes a single ranked report to
-`<project>/tmp/health-audit/report-<timestamp>/health-audit-report.md` and the full,
-unprocessed tool output to that run's `raw_original_result/`. The summary is printed to
-the terminal.
+It writes one ranked report to
+`<project>/tmp/health-audit/report-<timestamp>/health-audit-report.md`, the raw tool
+output to that run's `raw_original_result/`, and prints a summary to the terminal.
 
-Then triage: read the raw logs, pick the top handful of highest-impact items, and fill
-in the report's **Action plan** section — one line each: `[Category] problem → fix →
-effort`. (Inside Claude Code this triage step can be done for you from the raw logs.)
-
-To get the runtime (Pass 2) results folded in, make sure the project's database is set up
-and migrated before you run `audit.sh`; on a project whose DB isn't ready, the runtime
-phase is skipped and only the static results appear.
+Then **triage**: read the raw logs, pick the highest-impact items, and fill the report's
+**Action plan** — one line each: `[Category] problem → fix → effort`. (Inside Claude Code
+this step is done for you.) Finally, **export a shareable PDF** (see **Output** below).
 
 ---
 
