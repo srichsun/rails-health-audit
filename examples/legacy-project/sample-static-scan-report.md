@@ -3,7 +3,7 @@
 
 # Rails Health Audit — legacy-project
 
-_Generated 2026-06-23 10:06. Phase 1 (static scan). Full raw tool output is in `raw-result-<timestamp>/`._
+_Generated 2026-06-23 10:12. Phase 1 (static scan). Full raw tool output is in `raw-result-<timestamp>/`._
 
 ## 1. Overview (every check, most severe first)
 
@@ -29,7 +29,14 @@ Legend — 🔴 must fix (security / data) · 🟡 should fix (correctness / mai
 
 ## 2. Action plan
 
-_Severity first; cut noise with confidence/criticality (see note); call out any single root-cause fix. Format: [Category] problem (tool, file:line) -> fix -> effort (S/M/L)._
+> **How to read this — cut noise with confidence/criticality:** static tools
+> over-report. brakeman tags each warning High / Medium / Weak confidence — fix the
+> **High** ones first; Weak ones are often false positives. bundler-audit tags each
+> advisory Critical / High / Medium — triage **Critical/High**, don't treat all 100+
+> as equal. So a raw count (e.g. "137 advisories") is a starting point, not 137
+> separate jobs.
+
+_Severity first; call out any single root-cause fix. Format: [Category] problem (tool, `file:line`) -> fix -> effort (S/M/L). (raw: <folder>/<tool>.txt)_
 
 1. [Security] SQL injection — user input interpolated into a `where` and a raw `execute` (brakeman High, `app/controllers/posts_controller.rb:8` and `:9`) -> use parameterized / bind params -> S. (raw: raw-result-<timestamp>/brakeman.txt)
 2. [Security] Command injection — shells out with user input in `system("convert ...")` (brakeman High, `app/controllers/posts_controller.rb:26`) -> use a safe image API (ImageProcessing / MiniMagick) instead of a string-built shell command -> S.

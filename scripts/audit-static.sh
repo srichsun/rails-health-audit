@@ -166,18 +166,19 @@ echo "[7/7] Writing report"
   echo
   echo "## 2. Action plan"
   echo
-  echo "_Severity first; cut noise with confidence/criticality (see note); call out any"
-  echo "single root-cause fix. Format: [Category] problem (tool, file:line) → fix → effort (S/M/L)._"
+  echo "> **How to read this — cut noise with confidence/criticality:** static tools"
+  echo "> over-report. brakeman tags each warning High / Medium / Weak confidence — fix the"
+  echo "> **High** ones first; Weak ones are often false positives. bundler-audit tags each"
+  echo "> advisory Critical / High / Medium — triage **Critical/High**, don't treat all 100+"
+  echo "> as equal. So a raw count (e.g. \"137 advisories\") is a starting point, not 137"
+  echo "> separate jobs."
+  echo
+  echo "_Severity first; call out any single root-cause fix. Format: [Category] problem"
+  echo "(tool, \`file:line\`) → fix → effort (S/M/L). (raw: <folder>/<tool>.txt)_"
   echo
   echo "1. [Security] ..."
   echo "2. [Security] ..."
   echo "3. [Maintainability] ..."
-  echo
-  echo "> **\"Cut noise with confidence/criticality\" means:** static tools over-report."
-  echo "> brakeman tags each warning High / Medium / Weak confidence — fix the **High**"
-  echo "> ones first, Weak ones are often false positives. bundler-audit tags each advisory"
-  echo "> Critical / High / Medium — triage **Critical/High**, don't treat all 100+ as equal."
-  echo "> So a raw count (e.g. \"137 advisories\") is a starting point, not 137 separate jobs."
   echo
   echo "## 3. Phase 2 — runtime checks (follow-up, need app + DB)"
   echo
