@@ -72,7 +72,7 @@ DETECTORS=(
 )
 
 echo "[1/2] active_record_doctor (data correctness + indexing)"
-: > "$RAW/pass2_ar_doctor.txt"
+: > "$RAW/active_record_doctor.txt"
 AR_ROWS=""   # report table rows (Bash 3.2 has no associative arrays)
 AR_TOTAL=0   # total active_record_doctor findings, for the Overview row
 for det in "${DETECTORS[@]}"; do
@@ -87,13 +87,13 @@ for det in "${DETECTORS[@]}"; do
     AR_TOTAL=$(( AR_TOTAL + n ))
   fi
   AR_ROWS="${AR_ROWS}| ${det} | ${n} |"$'\n'
-  { echo "### $det ($n)"; printf '%s\n' "$body"; echo; } >> "$RAW/pass2_ar_doctor.txt"
+  { echo "### $det ($n)"; printf '%s\n' "$body"; echo; } >> "$RAW/active_record_doctor.txt"
   echo "  $det: $n finding(s)"
 done
 
 echo "[2/2] lol_dba (missing indexes from associations)"
-run_rake db:find_indexes | clean > "$RAW/pass2_lol_dba.txt"
-LOLDBA=$(grep -cE '^\s*add_index' "$RAW/pass2_lol_dba.txt")
+run_rake db:find_indexes | clean > "$RAW/lol_dba.txt"
+LOLDBA=$(grep -cE '^\s*add_index' "$RAW/lol_dba.txt")
 echo "  lol_dba: ${LOLDBA} missing index(es) suggested"
 
 # --- splice the runtime results into the ONE health report (static + runtime) ---
@@ -102,15 +102,15 @@ trap 'cleanup; rm -f "$PH2"' EXIT
 
 # The two Overview rows go into pre-placed markers so they land in severity order
 # (🔴 2 after the 🔴 1 rows, 🟡 3 next to the other 🟡 3 row) — no re-sort needed.
-AR_ROW="| 🔴 2 | Data correctness | active_record_doctor | ${AR_TOTAL} issue(s) | \`raw_original_result/pass2_ar_doctor.txt\` |"
-LOL_ROW="| 🟡 3 | Performance | lol_dba | ${LOLDBA} missing index(es) | \`raw_original_result/pass2_lol_dba.txt\` |"
+AR_ROW="| 🔴 2 | Data correctness | active_record_doctor | ${AR_TOTAL} issue(s) | \`raw_original_result/active_record_doctor.txt\` |"
+LOL_ROW="| 🟡 3 | Performance | lol_dba | ${LOLDBA} missing index(es) | \`raw_original_result/lol_dba.txt\` |"
 
 {
   echo "## 3. Still to run manually"
   echo
   echo "Runtime data-correctness & missing-index checks **ran** ($STAMP) and are folded into the"
   echo "Overview and Action plan above — full per-detector output is in"
-  echo "\`raw_original_result/pass2_ar_doctor.txt\` and \`raw_original_result/pass2_lol_dba.txt\`."
+  echo "\`raw_original_result/active_record_doctor.txt\` and \`raw_original_result/lol_dba.txt\`."
   echo
   echo "Two checks still need the app *exercised* (not just booted), so run them by hand:"
   echo

@@ -250,8 +250,8 @@ overwrites an older one — keep them to diff before/after.
         ├── fasterer.txt
         ├── rails_best_practices.txt
         ├── outdated.txt
-        ├── pass2_ar_doctor.txt          # runtime (Pass 2) — only when the app + DB ran
-        └── pass2_lol_dba.txt            # runtime (Pass 2) — only when the app + DB ran
+        ├── active_record_doctor.txt     # runtime (Pass 2) — only when the app + DB ran
+        └── lol_dba.txt                  # runtime (Pass 2) — only when the app + DB ran
 ```
 
 The `health-audit-report.md` is the one you read and act on. It has three sections —
