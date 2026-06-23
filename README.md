@@ -48,6 +48,143 @@ can act on.
 
 ---
 
+## 📦 Install
+
+As a Claude Code skill:
+
+```sh
+git clone https://github.com/srichsun/rails-health-audit ~/.claude/skills/rails-health-audit
+```
+
+Claude Code picks it up automatically. You can then ask Claude to "audit this Rails
+project's health", or run the script directly (below).
+
+Standalone (no Claude Code needed):
+
+```sh
+git clone https://github.com/srichsun/rails-health-audit
+```
+
+Requirements: Ruby 3.2+ (for `gem exec`). The analysis tools are fetched on demand.
+
+> **Why `gem exec`?** It runs each tool without permanently installing it. So you don't
+> have to `gem install` all these tools up front, and nothing is added to your system gems
+> or to the project's `Gemfile` — the audit stays self-contained and leaves no trace.
+> `gem exec` ships with the RubyGems bundled in Ruby 3.2+, which is why that's the floor.
+
+---
+
+## 🚀 Usage
+
+**With Claude Code (easiest).** Just ask in plain language — Claude picks up the skill,
+runs the scan, and does the triage for you:
+
+> "Audit this Rails project's health"
+
+Or invoke it explicitly as a slash command:
+
+```
+/rails-health-audit /path/to/rails/project
+```
+
+**Standalone — one command.** Run it directly (no Claude Code needed):
+
+```sh
+bash scripts/audit.sh /path/to/rails/project
+```
+
+`audit.sh` runs the static scan, then best-effort runs the runtime scan — the latter only
+if the app boots against a migrated database; otherwise it's skipped and the report's
+"Still to run" section says how to enable it. (It calls `audit-static.sh` and
+`audit-dynamic.sh` internally — the only command you run is `audit.sh`.) So to get the
+runtime results folded in, set up and migrate the project's DB before running it.
+
+It writes one ranked report to
+`<project>/tmp/health-audit/report-<timestamp>/health-audit-report.md`, the raw tool
+output to that run's `raw_original_result/`, and prints a summary to the terminal.
+
+Then **triage**: read the raw logs, pick the highest-impact items, and fill the report's
+**Action plan** — one line each: `[Category] problem → fix → effort`. (Inside Claude Code
+this step is done for you.) Finally, **export a shareable PDF** (see **Output** below).
+
+---
+
+## 📁 Output
+
+Everything lands under `<project>/tmp/health-audit/` — git-ignored in a real project (it's
+generated output), though this repo commits one sample so you can preview it. The scripts
+also print the report path to the terminal when they finish.
+
+Each run gets its own timestamped `report-<timestamp>/` folder, so a new run never
+overwrites an older one — keep them to diff before/after.
+
+```
+<project>/tmp/health-audit/
+└── report-<timestamp>/                  # one folder per run
+    ├── health-audit-report.md           # working source: Overview + Action plan + Still to run
+    ├── health-audit-report.pdf           # the shareable deliverable (from export.sh)
+    └── raw_original_result/             # full, unprocessed output from every tool
+        ├── brakeman.txt
+        ├── bundler-audit.txt
+        ├── license_finder.txt
+        ├── rubocop.txt
+        ├── erb_lint.txt
+        ├── rubycritic.txt
+        ├── fasterer.txt
+        ├── rails_best_practices.txt
+        ├── outdated.txt
+        ├── active_record_doctor.txt     # runtime (Pass 2) — only when the app + DB ran
+        └── lol_dba.txt                  # runtime (Pass 2) — only when the app + DB ran
+```
+
+The `health-audit-report.md` is the one you read and act on. It has three sections —
+"## 1. Overview", "## 2. Action plan", and "## 3. Still to run" — the runtime results
+(`active_record_doctor`, `lol_dba`) fold straight into the Overview table and Action plan,
+and section 3 just lists what's left to run manually. Each Action plan item cites
+the `file:line` and the `raw_original_result/…txt` it came from, so findings are traceable.
+
+Want a shareable copy? `bash scripts/export.sh <project>` renders `health-audit-report.md`
+to `health-audit-report.pdf` (the `.md` stays the editable source of truth).
+
+**See what a finished report looks like** without running anything — a filled sample is
+committed in the repo:
+**[📄 example health-audit-report.pdf](examples/example-unhealthy-project/tmp/health-audit/report-20260623-154905/health-audit-report.pdf)**
+(Overview + a fully filled Action plan), rendered from
+[its markdown source](examples/example-unhealthy-project/tmp/health-audit/report-20260623-154905/health-audit-report.md).
+
+---
+
+## 🧪 Try it on the bundled example
+
+The repo ships a real, **intentionally broken** Rails 8 app (`example-unhealthy-project`)
+that actually `bundle install`s — so every tool (including license_finder and bundle
+outdated) produces a real finding, not a "skipped". Point the audit at it:
+
+```sh
+bash scripts/audit.sh examples/example-unhealthy-project
+open examples/example-unhealthy-project/tmp/health-audit/report-*/health-audit-report.pdf
+```
+
+See [`examples/example-unhealthy-project/README.md`](examples/example-unhealthy-project/README.md)
+for the list of problems planted in it — or preview the committed
+[📄 sample report](examples/example-unhealthy-project/tmp/health-audit/report-20260623-154905/health-audit-report.pdf)
+(also linked under **Output** above).
+
+A real-world walkthrough (a legacy Rails 4.1 app) is in
+[`docs/case-study-legacy-rails.md`](docs/case-study-legacy-rails.md).
+
+---
+
+## ⚠️ Limitations
+
+- `audit-dynamic.sh` automates the data-correctness and indexing checks, but the N+1 and coverage
+  checks still need the app *exercised* (requests / the test suite), so those stay manual.
+- `bundle outdated` needs the project's own Ruby; it is skipped with a note when the
+  ambient Ruby does not match the project's pinned version.
+- The audit assesses and plans. It never edits your code — that decision stays human.
+
+---
+
 ## ⚙️ How it works
 
 ### The severity model
@@ -161,137 +298,6 @@ a codebase you've just inherited.
 · [SonarQube Ruby](https://docs.sonarsource.com/sonarqube-server/latest/analyzing-source-code/languages/ruby/)
 
 ---
-
-## 📦 Install
-
-As a Claude Code skill:
-
-```sh
-git clone https://github.com/srichsun/rails-health-audit ~/.claude/skills/rails-health-audit
-```
-
-Claude Code picks it up automatically. You can then ask Claude to "audit this Rails
-project's health", or run the script directly (below).
-
-Standalone (no Claude Code needed):
-
-```sh
-git clone https://github.com/srichsun/rails-health-audit
-```
-
-Requirements: Ruby 3.2+ (for `gem exec`). The analysis tools are fetched on demand.
-
-> **Why `gem exec`?** It runs each tool without permanently installing it. So you don't
-> have to `gem install` all these tools up front, and nothing is added to your system gems
-> or to the project's `Gemfile` — the audit stays self-contained and leaves no trace.
-> `gem exec` ships with the RubyGems bundled in Ruby 3.2+, which is why that's the floor.
-
----
-
-## 🚀 Usage
-
-**With Claude Code (easiest).** Just ask in plain language — Claude picks up the skill,
-runs the scan, and does the triage for you:
-
-> "Audit this Rails project's health"
-
-Or invoke it explicitly as a slash command:
-
-```
-/rails-health-audit /path/to/rails/project
-```
-
-**Standalone — one command.** Run it directly (no Claude Code needed):
-
-```sh
-bash scripts/audit.sh /path/to/rails/project
-```
-
-`audit.sh` runs the static scan, then best-effort runs the runtime scan — the latter only
-if the app boots against a migrated database; otherwise it's skipped and the report's
-"Still to run" section says how to enable it. (It calls `audit-static.sh` and
-`audit-dynamic.sh` internally — the only command you run is `audit.sh`.) So to get the
-runtime results folded in, set up and migrate the project's DB before running it.
-
-It writes one ranked report to
-`<project>/tmp/health-audit/report-<timestamp>/health-audit-report.md`, the raw tool
-output to that run's `raw_original_result/`, and prints a summary to the terminal.
-
-Then **triage**: read the raw logs, pick the highest-impact items, and fill the report's
-**Action plan** — one line each: `[Category] problem → fix → effort`. (Inside Claude Code
-this step is done for you.) Finally, **export a shareable PDF** (see **Output** below).
-
----
-
-## 📁 Output
-
-Everything lands under `<project>/tmp/health-audit/` — git-ignored in a real project (it's
-generated output), though this repo commits one sample so you can preview it. The scripts
-also print the report path to the terminal when they finish.
-
-Each run gets its own timestamped `report-<timestamp>/` folder, so a new run never
-overwrites an older one — keep them to diff before/after.
-
-```
-<project>/tmp/health-audit/
-└── report-<timestamp>/                  # one folder per run
-    ├── health-audit-report.md           # working source: Overview + Action plan + Still to run
-    ├── health-audit-report.pdf           # the shareable deliverable (from export.sh)
-    └── raw_original_result/             # full, unprocessed output from every tool
-        ├── brakeman.txt
-        ├── bundler-audit.txt
-        ├── license_finder.txt
-        ├── rubocop.txt
-        ├── erb_lint.txt
-        ├── rubycritic.txt
-        ├── fasterer.txt
-        ├── rails_best_practices.txt
-        ├── outdated.txt
-        ├── active_record_doctor.txt     # runtime (Pass 2) — only when the app + DB ran
-        └── lol_dba.txt                  # runtime (Pass 2) — only when the app + DB ran
-```
-
-The `health-audit-report.md` is the one you read and act on. It has three sections —
-"## 1. Overview", "## 2. Action plan", and "## 3. Still to run" — the runtime results
-(`active_record_doctor`, `lol_dba`) fold straight into the Overview table and Action plan,
-and section 3 just lists what's left to run manually. Each Action plan item cites
-the `file:line` and the `raw_original_result/…txt` it came from, so findings are traceable.
-
-Want a shareable copy? `bash scripts/export.sh <project>` renders `health-audit-report.md`
-to `health-audit-report.pdf` (the `.md` stays the editable source of truth).
-
----
-
-## 🧪 Try it on the bundled example
-
-The repo ships a real, **intentionally broken** Rails 8 app (`example-unhealthy-project`)
-that actually `bundle install`s — so every tool (including license_finder and bundle
-outdated) produces a real finding, not a "skipped". Point the audit at it:
-
-```sh
-bash scripts/audit.sh examples/example-unhealthy-project
-open examples/example-unhealthy-project/tmp/health-audit/report-*/health-audit-report.pdf
-```
-
-Want to see what you get before running anything? A committed sample is in the repo —
-**[📄 example health-audit-report.pdf](examples/example-unhealthy-project/tmp/health-audit/report-20260623-154905/health-audit-report.pdf)**
-(Overview + a fully filled Action plan, exported from
-[the markdown source](examples/example-unhealthy-project/tmp/health-audit/report-20260623-154905/health-audit-report.md)).
-See [`examples/example-unhealthy-project/README.md`](examples/example-unhealthy-project/README.md)
-for the list of problems planted in it.
-
-A real-world walkthrough (a legacy Rails 4.1 app) is in
-[`docs/case-study-legacy-rails.md`](docs/case-study-legacy-rails.md).
-
----
-
-## ⚠️ Limitations
-
-- `audit-dynamic.sh` automates the data-correctness and indexing checks, but the N+1 and coverage
-  checks still need the app *exercised* (requests / the test suite), so those stay manual.
-- `bundle outdated` needs the project's own Ruby; it is skipped with a note when the
-  ambient Ruby does not match the project's pinned version.
-- The audit assesses and plans. It never edits your code — that decision stays human.
 
 ## 📄 License
 
