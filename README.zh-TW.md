@@ -71,11 +71,12 @@ git clone https://github.com/srichsun/rails-health-audit
 
 ## 🚀 使用方式
 
-**在 Claude Code 裡（最簡單）**——用白話講，Claude 會幫你把下面三步都跑完：
+**在 Claude Code 裡（最簡單）**——直接用白話講：
 
 > 「幫我檢查這個 Rails 專案的健康度」
 
-或用斜線指令明確叫它：`/rails-health-audit /path/to/rails/project`。
+這一句就會自動幫你走完**下面的步驟一到三**——掃描、填好 Action plan、匯出 PDF。
+（或用斜線指令明確叫它：`/rails-health-audit /path/to/rails/project`。）
 
 **獨立使用**的話，三步驟從程式碼走到一份排好優先序的報告：
 

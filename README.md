@@ -76,11 +76,12 @@ Requirements: Ruby 3.2+ (for `gem exec`). The analysis tools are fetched on dema
 
 ## 🚀 Usage
 
-**With Claude Code (easiest)** — ask in plain language and Claude runs all three steps below for you:
+**With Claude Code (easiest)** — just ask in plain language:
 
 > "Audit this Rails project's health"
 
-Or invoke it explicitly: `/rails-health-audit /path/to/rails/project`.
+That single request walks through **Steps 1–3 below** for you — the scan, the filled
+Action plan, and the exported PDF. (Or invoke it explicitly: `/rails-health-audit /path/to/rails/project`.)
 
 **Standalone**, three steps take you from code to a prioritized report:
 
