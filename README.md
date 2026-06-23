@@ -67,15 +67,15 @@ injection outranks ten thousand style offenses.
 
 ### Two passes: a quick read, then a deeper look
 
-**Pass 1 — read the code (the script does this for you, automatically).**
+**Pass 1 — the static scan: read the code (the script does this for you, automatically).**
 It only _reads_ your source files and your gem list. It never starts your app, never
 touches your database, and installs nothing into your project. So it is safe to run on
 any codebase at any time, and it is fast. This pass covers security, licensing,
 maintainability, conventions, and tech debt. (Tools run from your installed binary, or
 are fetched on the fly with `gem exec` if you don't have them — Ruby 3.2+.)
 
-**Pass 2 — run the app.** Three things can't be answered by reading code; the app has to
-run against a real, migrated database:
+**Pass 2 — the runtime scan: run the app.** Three things can't be answered by reading
+code; the app has to run against a real, migrated database:
 
 - Is the data safe? — missing foreign keys, indexes, `NOT NULL`, unique constraints
   (`active_record_doctor`, `lol_dba`)
@@ -225,8 +225,9 @@ this step is done for you.) Finally, **export a shareable PDF** (see **Output** 
 
 ## 📁 Output
 
-Everything lands under `<project>/tmp/health-audit/` (git-ignored — it's generated). The
-scripts also print the report path to the terminal when they finish.
+Everything lands under `<project>/tmp/health-audit/` — git-ignored in a real project (it's
+generated output), though this repo commits one sample so you can preview it. The scripts
+also print the report path to the terminal when they finish.
 
 Each run gets its own timestamped `report-<timestamp>/` folder, so a new run never
 overwrites an older one — keep them to diff before/after.
