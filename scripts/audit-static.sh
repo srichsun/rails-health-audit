@@ -173,12 +173,14 @@ echo "[7/7] Writing report"
   echo "> as equal. So a raw count (e.g. \"137 advisories\") is a starting point, not 137"
   echo "> separate jobs."
   echo
-  echo "_Severity first; call out any single root-cause fix. Format: [Category] problem"
-  echo "(tool, \`file:line\`) → fix → effort (S/M/L). (raw: <folder>/<tool>.txt)_"
+  echo "_Severity first. Cover every 🔴 and 🟡 finding (one row each); collapse the ⚪"
+  echo "style-level findings into a single row. Use \`<br>\` for line breaks inside a cell._"
   echo
-  echo "1. [Security] ..."
-  echo "2. [Security] ..."
-  echo "3. [Maintainability] ..."
+  echo "| # | Pri | Issue (tool, \`file:line\`) | Solution | Effort | Raw |"
+  echo "|---|-----|----------------------------|----------|--------|-----|"
+  echo "| 1 | 🔴 | … | … | S/M/L | \`$RAW_REL/…txt\` |"
+  echo "| 2 | 🟡 | … | … | S/M/L | \`$RAW_REL/…txt\` |"
+  echo "| 3 | ⚪ | … | … | S/M/L | \`$RAW_REL/…txt\` |"
   echo
   echo "## 3. Phase 2 — runtime checks (follow-up, need app + DB)"
   echo

@@ -76,12 +76,17 @@ html_to_pdf() { # <html-file> <pdf-file>
 }
 
 echo "Exporting reports in $OUT (format: $FORMAT)"
-for md in "$OUT/static-scan-report.md" "$OUT/dynamic-scan-report.md"; do
-  [[ -f "$md" ]] || continue
+# Export the latest static + dynamic reports (filenames carry a timestamp).
+latest_static="$(ls -t "$OUT"/static-scan-report-*.md 2>/dev/null | head -1)"
+latest_dynamic="$(ls -t "$OUT"/dynamic-scan-report-*.md 2>/dev/null | head -1)"
+exported=0
+for md in "$latest_static" "$latest_dynamic"; do
+  [[ -n "$md" && -f "$md" ]] || continue
   base="${md%.md}"
   title="Rails Health Audit — $(basename "$base")"
   md_to_html "$md" "$base.html" "$title" || continue
   [[ "$FORMAT" == "pdf" || "$FORMAT" == "both" ]] && html_to_pdf "$base.html" "$base.pdf"
-  # html-only run: keep the .html; for pdf-only, the .html is the intermediate (kept too)
+  exported=1
 done
+[[ "$exported" == "0" ]] && echo "  No reports found in $OUT — run audit-static.sh first."
 echo "Done."

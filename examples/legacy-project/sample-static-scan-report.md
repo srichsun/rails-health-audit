@@ -3,7 +3,7 @@
 
 # Rails Health Audit — legacy-project
 
-_Generated 2026-06-23 10:12. Phase 1 (static scan). Full raw tool output is in `raw-result-<timestamp>/`._
+_Generated 2026-06-23 10:26. Phase 1 (static scan). Full raw tool output is in `raw-result-<timestamp>/`._
 
 ## 1. Overview (every check, most severe first)
 
@@ -36,14 +36,18 @@ Legend — 🔴 must fix (security / data) · 🟡 should fix (correctness / mai
 > as equal. So a raw count (e.g. "137 advisories") is a starting point, not 137
 > separate jobs.
 
-_Severity first; call out any single root-cause fix. Format: [Category] problem (tool, `file:line`) -> fix -> effort (S/M/L). (raw: <folder>/<tool>.txt)_
+_Severity first. Covers every 🔴 and 🟡 finding (one row each); ⚪ style-level findings collapsed into one row. `<br>` is used for line breaks inside a cell._
 
-1. [Security] SQL injection — user input interpolated into a `where` and a raw `execute` (brakeman High, `app/controllers/posts_controller.rb:8` and `:9`) -> use parameterized / bind params -> S. (raw: raw-result-<timestamp>/brakeman.txt)
-2. [Security] Command injection — shells out with user input in `system("convert ...")` (brakeman High, `app/controllers/posts_controller.rb:26`) -> use a safe image API (ImageProcessing / MiniMagick) instead of a string-built shell command -> S.
-3. [Security] CSRF off + XSS — `protect_from_forgery` missing (`app/controllers/application_controller.rb:1`) and unescaped `params[:q]` in a view (`app/views/posts/index.html.erb:4`) (brakeman High) -> add `protect_from_forgery with: :exception`, escape the output -> S.
-4. [Security + Tech debt] Rails 4.1.16 is EOL since 2017 (brakeman, `Gemfile.lock:29`); the 137 advisories cluster on nokogiri (53) / rack (37) / Rails core (~30), incl. 8 Critical + 50 High -> upgrade Rails to a supported line, then `bundle update` — one move clears the bulk. Highest leverage but large; do it behind a green test net -> L. (raw: raw-result-<timestamp>/bundler-audit.txt)
-5. [Compliance] license_finder couldn't run here (gems wouldn't resolve under this Ruby) -> rerun it in the project's own environment after a working `bundle install`, then add a `.license_finder.yml` permitting approved licenses (MIT / Apache…) -> S. (raw: raw-result-<timestamp>/license_finder.txt)
-6. [Maintainability] 22 smells (rubycritic 89/100), 20 rubocop + 11 erb_lint offenses -> `rubocop -a` auto-fixes most; refactor only the worst files RubyCritic flags -> M, opportunistic. (raw: raw-result-<timestamp>/rubycritic.txt)
+| # | Pri | Issue (tool, `file:line`) | Solution | Effort | Raw |
+|---|-----|----------------------------|----------|--------|-----|
+| 1 | 🔴 | SQL injection — user input interpolated into a `where` and a raw `execute` (brakeman High)<br>`posts_controller.rb:8, 9` | Use parameterized / bind params | S | `raw-result-<timestamp>/brakeman.txt` |
+| 2 | 🔴 | Command injection — `system("convert ...")` shells out with user input (brakeman High)<br>`posts_controller.rb:26` | Use a safe image API (ImageProcessing / MiniMagick), not a string-built shell command | S | `raw-result-<timestamp>/brakeman.txt` |
+| 3 | 🔴 | CSRF off + XSS — `protect_from_forgery` missing & unescaped `params[:q]` (brakeman High)<br>`application_controller.rb:1`, `views/posts/index.html.erb:4` | Add `protect_from_forgery with: :exception`; escape the output | S | `raw-result-<timestamp>/brakeman.txt` |
+| 4 | 🔴 | Rails 4.1.16 is EOL (2017); 137 advisories cluster on nokogiri (53) / rack (37) / Rails core (~30), incl. 8 Critical + 50 High<br>`Gemfile.lock:29` | **Upgrade Rails to a supported line, then `bundle update` — one move clears the bulk.** Do it behind a green test net | L | `raw-result-<timestamp>/bundler-audit.txt` |
+| 5 | 🟡 | Rails-convention issues — fat controllers, logic that belongs in models, Law of Demeter (13 warnings) | Move logic into models / extract methods, case by case | M | `raw-result-<timestamp>/rails_best_practices.txt` |
+| 6 | 🟡 | Maintainability — 22 code smells, score 89/100 (rubycritic) | Refactor only the worst-scoring files; leave the rest | M | `raw-result-<timestamp>/rubycritic.txt` |
+| 7 | 🔴 | license_finder couldn't run (gems wouldn't resolve under this Ruby) — **skipped ≠ pass** | Rerun in the project's own env after a working `bundle install`; add `.license_finder.yml` for approved licenses | S | `raw-result-<timestamp>/license_finder.txt` |
+| 8 | ⚪ | Style — 20 rubocop + 11 erb_lint offenses | Run `rubocop -a` (auto-fixes most); tidy ERB | S | `raw-result-<timestamp>/rubocop.txt` |
 
 ## 3. Phase 2 — runtime checks (follow-up, need app + DB)
 

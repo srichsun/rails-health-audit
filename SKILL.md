@@ -84,10 +84,10 @@ The N+1 (`bullet`/`prosopite`) and coverage (`simplecov`) checks need the app *e
 
 ### Phase 1b — fill the Action plan (REQUIRED, not optional)
 
-`audit-static.sh` only writes an empty Action plan template; the prioritization is the judgment
-this skill exists for. **As soon as the scan finishes, read the raw logs in
-`tmp/health-audit/raw/` and replace the empty `## Action plan` section of
-`static-scan-report.md` with a real, ranked plan** — then report the filled plan to the
+`audit-static.sh` only writes an empty Action plan **table**; the prioritization is the
+judgment this skill exists for. **As soon as the scan finishes, read the raw logs in the
+`tmp/health-audit/raw-result-<timestamp>/` folder and fill the `## 2. Action plan` table of
+`static-scan-report-<timestamp>.md` with real rows** — then report the filled plan to the
 user. Never hand back the blank template. How to prioritize:
 
 1. **Business impact over volume** — order security → data correctness → performance →
@@ -99,19 +99,20 @@ user. Never hand back the blank template. How to prioritize:
 4. **Sequence by risk** — risky changes (a major upgrade) go behind a safety net (green
    tests in CI) first.
 
-Format every item the same way (write the plan in **English**):
+Write the plan as a **table, in English**, with these columns:
 
-**[Category] problem (tool, `file:line`) → concrete fix → effort (S/M/L). (raw: <raw-folder>/<tool>.txt)**
+`| # | Pri | Issue (tool, ` + "`file:line`" + `) | Solution | Effort | Raw |`
 
-- **Always cite `file:line`** — open the relevant `raw-result-*/…txt`, find the exact file
-  and line the tool reported, and put it in the item so the reader can jump straight to it.
-  (e.g. brakeman lines look like `File: …` + `Line: …`.)
-- **Always cite the raw source** — end each item with `(raw: <folder>/<tool>.txt)` so the
-  finding is traceable.
-- For a `⚠️ skipped` check, don't drop it — add an item saying it couldn't run and must be
-  rerun in the project's environment.
+- **Coverage** — give every 🔴 and 🟡 finding its own row; collapse the ⚪ style-level
+  findings (rubocop / erb_lint) into a single row. Don't drop anything important.
+- **Always cite `file:line`** in the Issue cell — open the relevant `raw-result-*/…txt`,
+  find the exact file and line the tool reported (brakeman lines look like `File:` + `Line:`).
+  Use `<br>` for line breaks inside a cell.
+- **Always cite the raw source** in the Raw column (`<raw-folder>/<tool>.txt`).
+- For a `⚠️ skipped` check, don't drop it — add a row noting it couldn't run (skipped ≠ pass)
+  and must be rerun in the project's own environment.
 
-Keep it to the top ~6–10 items, ordered most-severe-first. See
+Keep it focused — every 🔴/🟡 plus one ⚪ row, ordered most-severe-first. See
 `examples/legacy-project/sample-static-scan-report.md` for a worked example.
 
 ## Notes
