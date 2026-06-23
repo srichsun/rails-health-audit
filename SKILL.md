@@ -1,9 +1,16 @@
 ---
 name: rails-health-audit
-description: Audit the health of any Rails codebase and produce a severity-ranked action plan. Use when asked to assess code quality, find tech debt, scan a Rails project for security/performance/maintainability issues, or plan a refactor/optimization. Runs static analysis tools, ranks findings most-severe-first, and emits a prioritized improvement plan.
+description: Audit the health of any Rails codebase and produce a severity-ranked action plan. Use when asked to audit, health-check, scan, or assess a Rails project for security/performance/maintainability issues, or plan a refactor/optimization. A single "audit X" request always means BOTH run the scan AND deliver a filled, prioritized action plan in one go — never hand back a blank template.
 ---
 
 # Rails Health Audit
+
+> **What "audit" means here — non-negotiable:** when the user asks to *audit*,
+> *health-check*, *scan*, or *assess* a Rails project, that single request means
+> **run the scan AND deliver a filled, ranked Action plan** — automatically, in one go.
+> The user never has to ask for the plan separately; the plan IS the deliverable.
+> Running the script and handing back the blank-template report is a FAILURE to do the
+> task. Always end by showing the user the ranked Action plan you wrote.
 
 A repeatable method for assessing an existing Rails codebase and turning the result
 into a prioritized improvement plan — "find problem X with tool Y, fix it with method Z",
