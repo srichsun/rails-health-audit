@@ -274,11 +274,12 @@ bash scripts/audit.sh examples/example-unhealthy-project
 open examples/example-unhealthy-project/tmp/health-audit/report-*/health-audit-report.pdf
 ```
 
+Want to see what you get before running anything? A committed sample is in the repo —
+**[📄 example health-audit-report.pdf](examples/example-unhealthy-project/tmp/health-audit/report-20260623-154905/health-audit-report.pdf)**
+(Overview + a fully filled Action plan, exported from
+[the markdown source](examples/example-unhealthy-project/tmp/health-audit/report-20260623-154905/health-audit-report.md)).
 See [`examples/example-unhealthy-project/README.md`](examples/example-unhealthy-project/README.md)
-for the list of problems planted in it, or read the committed output snapshot under
-[`examples/example-unhealthy-project/tmp/health-audit/`](examples/example-unhealthy-project/tmp/health-audit/)
-(a `report-<timestamp>/health-audit-report.pdf` with the Action plan already filled) without
-running anything.
+for the list of problems planted in it.
 
 A real-world walkthrough (a legacy Rails 4.1 app) is in
 [`docs/case-study-legacy-rails.md`](docs/case-study-legacy-rails.md).

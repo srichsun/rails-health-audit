@@ -97,14 +97,13 @@ LOLDBA=$(grep -cE '^\s*add_index' "$RAW/pass2_lol_dba.txt")
 echo "  lol_dba: ${LOLDBA} missing index(es) suggested"
 
 # --- splice the runtime results into the ONE health report (static + runtime) ---
-OVR="$(mktemp /tmp/rha_ovr.XXXXXX)"   # the two Overview rows to add
-PH2="$(mktemp /tmp/rha_ph2.XXXXXX)"   # the filled Phase 2 section
-trap 'cleanup; rm -f "$OVR" "$PH2"' EXIT
+PH2="$(mktemp /tmp/rha_ph2.XXXXXX)"   # the filled "Still to run" section
+trap 'cleanup; rm -f "$PH2"' EXIT
 
-{
-  echo "| 🔴 2 | Data correctness | active_record_doctor | ${AR_TOTAL} issue(s) | \`raw_original_result/pass2_ar_doctor.txt\` |"
-  echo "| 🟡 3 | Performance | lol_dba | ${LOLDBA} missing index(es) | \`raw_original_result/pass2_lol_dba.txt\` |"
-} > "$OVR"
+# The two Overview rows go into pre-placed markers so they land in severity order
+# (🔴 2 after the 🔴 1 rows, 🟡 3 next to the other 🟡 3 row) — no re-sort needed.
+AR_ROW="| 🔴 2 | Data correctness | active_record_doctor | ${AR_TOTAL} issue(s) | \`raw_original_result/pass2_ar_doctor.txt\` |"
+LOL_ROW="| 🟡 3 | Performance | lol_dba | ${LOLDBA} missing index(es) | \`raw_original_result/pass2_lol_dba.txt\` |"
 
 {
   echo "## 3. Still to run manually"
@@ -122,10 +121,11 @@ trap 'cleanup; rm -f "$OVR" "$PH2"' EXIT
   echo "  suite (\`bin/rails test\` or \`bundle exec rspec\`), then open \`coverage/index.html\`."
 } > "$PH2"
 
-# Replace the RUNTIME_OVERVIEW_ROWS marker with the two rows, and the whole
+# Fill the two Overview row markers in place, and replace the whole
 # PHASE2_START..PHASE2_END placeholder block with the filled section.
-awk -v ovr="$OVR" -v ph2="$PH2" '
-  /<!-- RUNTIME_OVERVIEW_ROWS -->/ { while ((getline l < ovr) > 0) print l; next }
+awk -v ar="$AR_ROW" -v lol="$LOL_ROW" -v ph2="$PH2" '
+  /<!-- RUNTIME_AR_ROW -->/     { print ar; next }
+  /<!-- RUNTIME_LOLDBA_ROW -->/ { print lol; next }
   /<!-- PHASE2_START -->/ { while ((getline l < ph2) > 0) print l; skip=1; next }
   /<!-- PHASE2_END -->/   { skip=0; next }
   skip { next }
