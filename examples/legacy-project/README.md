@@ -1,4 +1,4 @@
-# legacy_blog — intentionally unhealthy sample app
+# legacy-project — intentionally unhealthy sample app
 
 This is **not** a real application. It is a tiny, deliberately broken Rails app
 used to demonstrate `rails-health-audit`. Every file contains planted

@@ -231,11 +231,13 @@ bundle (your `Gemfile` is untouched), and writes `<project>/tmp/health-audit/dyn
 Everything lands under `<project>/tmp/health-audit/` (git-ignored — it's generated). The
 scripts also print the report path to the terminal when they finish.
 
+Each run is timestamped, so a new run never overwrites an older one.
+
 ```
 <project>/tmp/health-audit/
-├── static-scan-report.md      # static scan: summary table + the prioritized Action plan
-├── dynamic-scan-report.md       # dynamic scan results (only if you ran audit-dynamic.sh)
-└── raw/           # full, unprocessed output from every tool — the detail you triage from
+├── static-scan-report-<timestamp>.md    # overview (all checks) + prioritized Action plan
+├── dynamic-scan-report-<timestamp>.md   # dynamic scan results (only if you ran audit-dynamic.sh)
+└── raw-result-<timestamp>/              # full, unprocessed output from every tool
     ├── brakeman.txt
     ├── bundler-audit.txt
     ├── license_finder.txt
@@ -243,12 +245,11 @@ scripts also print the report path to the terminal when they finish.
     ├── rubycritic.txt
     ├── fasterer.txt
     ├── rails_best_practices.txt
-    ├── outdated.txt
-    ├── pass2_ar_doctor.txt     # from audit-dynamic.sh
-    └── pass2_lol_dba.txt       # from audit-dynamic.sh
+    └── outdated.txt
 ```
 
-`static-scan-report.md` is the one you read and act on; `raw/` is where the specifics live.
+The `static-scan-report-*.md` is the one you read and act on; each Action plan item cites
+the `file:line` and the `raw-result-*/…txt` it came from, so findings are traceable.
 
 Want a shareable copy? `bash scripts/export.sh <project> both` renders `static-scan-report.md` /
 `dynamic-scan-report.md` to HTML + PDF (optional — markdown stays the source of truth).
@@ -261,13 +262,13 @@ The repo ships a tiny, **intentionally broken** Rails app so you can see the
 audit light up without pointing it at your own code:
 
 ```sh
-bash scripts/audit-static.sh examples/legacy_blog
-cat examples/legacy_blog/tmp/health-audit/static-scan-report.md
+bash scripts/audit-static.sh examples/legacy-project
+cat examples/legacy-project/tmp/health-audit/static-scan-report.md
 ```
 
-See [`examples/legacy_blog/README.md`](examples/legacy_blog/README.md) for the list of
+See [`examples/legacy-project/README.md`](examples/legacy-project/README.md) for the list of
 problems planted in it, or read the committed output snapshot at
-[`examples/legacy_blog/sample-static-scan-report.md`](examples/legacy_blog/sample-static-scan-report.md) without
+[`examples/legacy-project/sample-static-scan-report.md`](examples/legacy-project/sample-static-scan-report.md) without
 running anything.
 
 A real-world walkthrough (a legacy Rails 4.1 app) is in

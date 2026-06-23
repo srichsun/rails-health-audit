@@ -13,11 +13,13 @@ if [[ ! -f "$PROJECT/Gemfile" || ! -f "$PROJECT/config/application.rb" ]]; then
   exit 1
 fi
 
+TS="$(date '+%Y%m%d-%H%M%S')"          # timestamp for this run's filenames
+STAMP="$(date '+%Y-%m-%d %H:%M')"      # human-readable, shown inside the report
 OUT="$PROJECT/tmp/health-audit"
-RAW="$OUT/raw"
+RAW="$OUT/raw-result-$TS"             # per-run raw folder, never overwrites old runs
 mkdir -p "$RAW"
-REPORT="$OUT/static-scan-report.md"
-STAMP="$(date '+%Y-%m-%d %H:%M')"
+REPORT="$OUT/static-scan-report-$TS.md"
+RAW_REL="$(basename "$RAW")"          # relative name for links inside the report
 
 echo "Rails Health Audit → $PROJECT"
 echo "Report → $REPORT"
@@ -59,16 +61,18 @@ echo "  bundler-audit: ${AUDIT} vulnerable gem advisory(ies)"
 # ---------------------------------------------------------------------------
 echo "[2/7] Compliance — license_finder"
 run_tool license_finder license_finder "$RAW/license_finder.txt" action_items
-if grep -qiE 'could not|bundler|no such|error|command not found' "$RAW/license_finder.txt" 2>/dev/null \
-   && ! grep -qiE 'dependenc' "$RAW/license_finder.txt" 2>/dev/null; then
-  LICENSE="skipped (needs bundle install)"
+if grep -qiE 'SolveFailure|Could not find|Could not resolve|Bundler::|LoadError|command not found|no such file' "$RAW/license_finder.txt" 2>/dev/null; then
+  LICENSE="⚠️ skipped (couldn't resolve gems — needs a working \`bundle install\`)"
 elif grep -qiE 'All dependencies.*approved' "$RAW/license_finder.txt" 2>/dev/null; then
   LICENSE=0
 else
   LICENSE=$(grep -ciE '^[a-z0-9_.-]+, ' "$RAW/license_finder.txt" 2>/dev/null)
   LICENSE="${LICENSE:-?}"
 fi
-echo "  license_finder: ${LICENSE} dependency(ies) needing license approval"
+case "$LICENSE" in
+  ⚠️*) echo "  license_finder: ${LICENSE}" ;;
+  *)   echo "  license_finder: ${LICENSE} dependency(ies) needing license approval" ;;
+esac
 
 # ---------------------------------------------------------------------------
 # 4. MAINTAINABILITY
@@ -120,7 +124,7 @@ echo "  rails_best_practices: ${RBP} warning(s)"
 echo "[6/7] Tech debt — bundle outdated"
 ( cd "$PROJECT" && bundle outdated --parseable ) >"$RAW/outdated.txt" 2>&1
 if grep -qiE 'your Ruby version|your Gemfile specified|Could not find|Bundler::' "$RAW/outdated.txt" 2>/dev/null; then
-  OUTDATED="skipped (Ruby/bundle mismatch — run with project's Ruby)"
+  OUTDATED="⚠️ skipped (Ruby/bundle mismatch — run with the project's own Ruby)"
 else
   OUTDATED=$(grep -cE '\(newest' "$RAW/outdated.txt" 2>/dev/null)
   [[ "${OUTDATED:-0}" == "0" ]] && OUTDATED=$(grep -cE '^[a-z0-9_.-]+ \(' "$RAW/outdated.txt" 2>/dev/null)
@@ -136,42 +140,53 @@ echo "[7/7] Writing report"
 {
   echo "# Rails Health Audit — $(basename "$PROJECT")"
   echo
-  echo "_Generated $STAMP. Phase 1 static scan. Raw output in \`tmp/health-audit/raw/\`._"
+  echo "_Generated $STAMP. Phase 1 (static scan). Full raw tool output is in \`$RAW_REL/\`._"
   echo
-  echo "## Summary (most severe first)"
+  echo "## 1. Overview (every check, most severe first)"
   echo
-  echo "| Rank | Category | Tool | Finding |"
-  echo "|------|----------|------|---------|"
-  echo "| 1 | Security | brakeman | ${BRAKEMAN} warning(s) |"
-  echo "| 1 | Security | bundler-audit | ${AUDIT} vulnerable advisory(ies) |"
-  echo "| 1 | Compliance | license_finder | ${LICENSE} dep(s) needing approval |"
-  echo "| 3 | Performance | fasterer | ${FASTERER} speed suggestion(s) |"
-  echo "| 4 | Maintainability | rubycritic | score ${RC_SCORE:-?}, ${RC_SMELLS:-?} smell(s) |"
-  echo "| 4 | Maintainability | rubocop | ${RUBOCOP} offense(s) |"
-  echo "| 4 | Maintainability | erb_lint | ${ERBLINT} ERB offense(s) |"
-  echo "| 4 | Rails conventions | rails_best_practices | ${RBP} warning(s) |"
-  echo "| 5 | Tech debt | bundle outdated | ${OUTDATED} gem(s) behind |"
+  echo "| Priority | Category | Tool | Finding | Raw output |"
+  echo "|----------|----------|------|---------|------------|"
+  echo "| 🔴 1 | Security | brakeman | ${BRAKEMAN} warning(s) | \`$RAW_REL/brakeman.txt\` |"
+  echo "| 🔴 1 | Security | bundler-audit | ${AUDIT} vulnerable advisory(ies) | \`$RAW_REL/bundler-audit.txt\` |"
+  echo "| 🔴 1 | Compliance | license_finder | ${LICENSE} | \`$RAW_REL/license_finder.txt\` |"
+  echo "| 🟡 3 | Performance | fasterer | ${FASTERER} speed suggestion(s) | \`$RAW_REL/fasterer.txt\` |"
+  echo "| 🟡 4 | Maintainability | rubycritic | score ${RC_SCORE:-?}, ${RC_SMELLS:-?} smell(s) | \`$RAW_REL/rubycritic.txt\` |"
+  echo "| 🟡 4 | Rails conventions | rails_best_practices | ${RBP} warning(s) | \`$RAW_REL/rails_best_practices.txt\` |"
+  echo "| ⚪ 4 | Maintainability | rubocop | ${RUBOCOP} offense(s) | \`$RAW_REL/rubocop.txt\` |"
+  echo "| ⚪ 4 | Maintainability | erb_lint | ${ERBLINT} ERB offense(s) | \`$RAW_REL/erb_lint.txt\` |"
+  echo "| ⚪ 5 | Tech debt | bundle outdated | ${OUTDATED} | \`$RAW_REL/outdated.txt\` |"
   echo
-  echo "> Ranks 2 (data correctness) and the N+1 part of rank 3 need the app to boot —"
-  echo "> see Phase 2 below."
+  echo "Legend — 🔴 must fix (security / data) · 🟡 should fix (correctness / maintainability) · ⚪ nice to have (style / freshness)."
   echo
-  echo "## Phase 2 — runtime checks (follow-up, need app + DB)"
+  echo "> **A ⚠️ skipped check is NOT a pass.** It means the tool could not run in this"
+  echo "> environment, not that there is nothing wrong. license_finder needs a real"
+  echo "> \`bundle install\`; bundle outdated needs the project's own Ruby (this run used a"
+  echo "> different Ruby than the project pins). Re-run both in the project's environment"
+  echo "> to get a real result."
   echo
-  echo "Add temporarily to \`Gemfile\` (\`:development\`/\`:test\`) and run in the project:"
+  echo "## 2. Action plan"
   echo
-  echo "- **Data correctness** — \`active_record_doctor\` → \`bundle exec rake active_record_doctor\`"
-  echo "  (missing FKs, NOT NULL, unique indexes, model/DB mismatch)"
-  echo "- **Missing indexes** — \`lol_dba\` → \`bundle exec rake db:find_indexes\`"
-  echo "- **N+1 queries** — \`bullet\` (dev/test) or \`prosopite\`; exercise app / run tests"
-  echo "- **Test coverage** — \`simplecov\` → run the suite, read \`coverage/index.html\`"
-  echo
-  echo "## Action plan"
-  echo
-  echo "_Fill in after review — one line per item: [Category] problem → fix → effort._"
+  echo "_Severity first; cut noise with confidence/criticality (see note); call out any"
+  echo "single root-cause fix. Format: [Category] problem (tool, file:line) → fix → effort (S/M/L)._"
   echo
   echo "1. [Security] ..."
-  echo "2. [Data] ..."
-  echo "3. [Perf] ..."
+  echo "2. [Security] ..."
+  echo "3. [Maintainability] ..."
+  echo
+  echo "> **\"Cut noise with confidence/criticality\" means:** static tools over-report."
+  echo "> brakeman tags each warning High / Medium / Weak confidence — fix the **High**"
+  echo "> ones first, Weak ones are often false positives. bundler-audit tags each advisory"
+  echo "> Critical / High / Medium — triage **Critical/High**, don't treat all 100+ as equal."
+  echo "> So a raw count (e.g. \"137 advisories\") is a starting point, not 137 separate jobs."
+  echo
+  echo "## 3. Phase 2 — runtime checks (follow-up, need app + DB)"
+  echo
+  echo "These can't be answered by reading code; run them in the project (see audit-dynamic.sh):"
+  echo
+  echo "- **Data correctness** — \`active_record_doctor\` (missing FKs, NOT NULL, unique indexes, model/DB mismatch)"
+  echo "- **Missing indexes** — \`lol_dba\` (\`db:find_indexes\`)"
+  echo "- **N+1 queries** — \`bullet\` (dev/test) or \`prosopite\`; exercise app / run tests"
+  echo "- **Test coverage** — \`simplecov\` → run the suite, read \`coverage/index.html\`"
 } > "$REPORT"
 
 echo

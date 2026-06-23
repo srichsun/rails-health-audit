@@ -99,9 +99,20 @@ user. Never hand back the blank template. How to prioritize:
 4. **Sequence by risk** — risky changes (a major upgrade) go behind a safety net (green
    tests in CI) first.
 
-Write each item as **[Category] problem (found by tool) → concrete fix → rough effort
-(S/M/L)**. Keep it to the top ~6–10 so it is actionable, not a dump. See
-`examples/legacy_blog/sample-static-scan-report.md` for a worked example.
+Format every item the same way (write the plan in **English**):
+
+**[Category] problem (tool, `file:line`) → concrete fix → effort (S/M/L). (raw: <raw-folder>/<tool>.txt)**
+
+- **Always cite `file:line`** — open the relevant `raw-result-*/…txt`, find the exact file
+  and line the tool reported, and put it in the item so the reader can jump straight to it.
+  (e.g. brakeman lines look like `File: …` + `Line: …`.)
+- **Always cite the raw source** — end each item with `(raw: <folder>/<tool>.txt)` so the
+  finding is traceable.
+- For a `⚠️ skipped` check, don't drop it — add an item saying it couldn't run and must be
+  rerun in the project's environment.
+
+Keep it to the top ~6–10 items, ordered most-severe-first. See
+`examples/legacy-project/sample-static-scan-report.md` for a worked example.
 
 ## Notes
 
