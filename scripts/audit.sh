@@ -31,6 +31,16 @@ else
 fi
 
 RUN="$(ls -dt "$PROJECT"/tmp/health-audit/report-* 2>/dev/null | head -1)"
+
+# If the runtime pass was skipped, its unfilled row markers are still sitting between
+# Overview rows — a stray HTML comment there breaks the whole markdown table. Drop them.
+# (When the runtime pass ran, it already replaced them, so this is a no-op.)
+if [[ -n "$RUN" && -f "$RUN/health-audit-report.md" ]]; then
+  MD="$RUN/health-audit-report.md"
+  awk '!/<!-- RUNTIME_AR_ROW -->/ && !/<!-- RUNTIME_LOLDBA_ROW -->/' "$MD" > "$MD.tmp" \
+    && mv "$MD.tmp" "$MD"
+fi
+
 echo
 echo "=================================================================="
 echo "Report folder: $RUN"
