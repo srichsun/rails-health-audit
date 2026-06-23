@@ -1,4 +1,4 @@
-# Intentionally unhealthy schema — used to demonstrate the runtime (Phase 2) audit.
+# Intentionally unhealthy schema — used to demonstrate the runtime audit.
 # Every "missing" thing below is on purpose so active_record_doctor / lol_dba light up:
 #   - no foreign keys           -> missing_foreign_keys
 #   - foreign-key cols unindexed -> unindexed_foreign_keys / lol_dba

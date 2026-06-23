@@ -20,13 +20,13 @@ PROJECT="$(cd "$PROJECT" 2>/dev/null && pwd)" || { echo "No such directory: ${1:
 bash "$HERE/audit-static.sh" "$PROJECT" || exit 1
 
 # 2. Runtime — best effort. A failure here (app won't boot / no DB) is not fatal;
-#    the report keeps its "not run yet" Phase 2 section explaining how to enable it.
+#    the report keeps its "not run yet" runtime note in the "Still to run" section.
 echo
-echo "→ Phase 2 (runtime): trying to boot the app against its DB…"
+echo "→ Runtime checks: trying to boot the app against its DB…"
 if bash "$HERE/audit-dynamic.sh" "$PROJECT"; then
   :
 else
-  echo "  ↳ skipped — the report's Phase 2 section explains how to enable it"
+  echo "  ↳ skipped — the report's \"Still to run\" section explains how to enable it"
   echo "    (set up + migrate the DB, then re-run this command)."
 fi
 

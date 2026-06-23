@@ -185,15 +185,25 @@ echo "[7/7] Writing report"
   echo "| 3 | ⚪ | … | … | S/M/L | \`$RAW_REL/…txt\` |"
   echo
   echo "<!-- PHASE2_START -->"
-  echo "## 3. Phase 2 — runtime checks (follow-up, need app + DB)"
+  echo "## 3. Still to run"
   echo
-  echo "Not run yet. These can't be answered by reading code; run \`audit-dynamic.sh\` against"
-  echo "the project (booted, DB migrated) and this section is filled in automatically:"
+  echo "**A) Runtime data checks — not run yet.** \`active_record_doctor\` (missing FKs / NOT NULL /"
+  echo "unique indexes) and \`lol_dba\` (missing indexes) need the app booted against a migrated DB."
+  echo "Set up the DB, then re-run the audit — their findings are folded straight into the Overview"
+  echo "and Action plan above:"
   echo
-  echo "- **Data correctness** — \`active_record_doctor\` (missing FKs, NOT NULL, unique indexes, model/DB mismatch)"
-  echo "- **Missing indexes** — \`lol_dba\` (\`db:find_indexes\`)"
-  echo "- **N+1 queries** — \`bullet\` (dev/test) or \`prosopite\`; exercise app / run tests"
-  echo "- **Test coverage** — \`simplecov\` → run the suite, read \`coverage/index.html\`"
+  echo '```sh'
+  echo "bin/rails db:prepare          # create + migrate the database"
+  echo "bash <skill>/scripts/audit.sh $(basename "$PROJECT")   # re-run; runtime checks now included"
+  echo '```'
+  echo
+  echo "**B) Need the app *exercised* (not just booted) — do these by hand:**"
+  echo
+  echo "- **N+1 queries** — add \`gem \"bullet\"\` (development/test), enable it in"
+  echo "  \`config/environments/test.rb\`, then run your request/system specs; Bullet logs every N+1."
+  echo "- **Test coverage** — add \`gem \"simplecov\", require: false\` (test), put"
+  echo "  \`require \"simplecov\"; SimpleCov.start \"rails\"\` at the top of your test helper, run the"
+  echo "  suite (\`bin/rails test\` or \`bundle exec rspec\`), then open \`coverage/index.html\`."
   echo "<!-- PHASE2_END -->"
 } > "$REPORT"
 

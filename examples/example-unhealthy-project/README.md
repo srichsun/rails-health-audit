@@ -39,10 +39,10 @@ filled in, so you can see the deliverable without running anything.
 | `config/routes.rb` | Verb confusion (`via: :all`) | brakeman / rails_best_practices |
 | (style, app-wide) | Spacing / layout offenses | rubocop |
 
-## Runtime (Phase 2) — the DB is intentionally broken too
+## Runtime checks — the DB is intentionally broken too
 
 The schema (`db/migrate/`, `db/schema.rb`) is planted with data-integrity problems so the
-runtime scan also lights up. `audit.sh` runs Phase 2 automatically, but it can only do so
+runtime scan also lights up. `audit.sh` runs the runtime checks automatically, but it can only do so
 once the database exists — so set up the DB first, then run the audit:
 
 ```sh

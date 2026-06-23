@@ -238,7 +238,7 @@ overwrites an older one — keep them to diff before/after.
 ```
 <project>/tmp/health-audit/
 └── report-<timestamp>/                  # one folder per run
-    ├── health-audit-report.md           # working source: Overview + Action plan + Phase 2 runtime checks
+    ├── health-audit-report.md           # working source: Overview + Action plan + Still to run
     ├── health-audit-report.pdf           # the shareable deliverable (from export.sh)
     └── raw_original_result/             # full, unprocessed output from every tool
         ├── brakeman.txt
@@ -253,8 +253,9 @@ overwrites an older one — keep them to diff before/after.
 ```
 
 The `health-audit-report.md` is the one you read and act on. It has three sections —
-"## 1. Overview", "## 2. Action plan", and "## 3. Phase 2 — runtime checks" — with the
-runtime results folded into the Overview table and section 3. Each Action plan item cites
+"## 1. Overview", "## 2. Action plan", and "## 3. Still to run" — the runtime results
+(`active_record_doctor`, `lol_dba`) fold straight into the Overview table and Action plan,
+and section 3 just lists what's left to run manually. Each Action plan item cites
 the `file:line` and the `raw_original_result/…txt` it came from, so findings are traceable.
 
 Want a shareable copy? `bash scripts/export.sh <project>` renders `health-audit-report.md`

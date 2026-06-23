@@ -66,7 +66,7 @@ bash ~/.claude/skills/rails-health-audit/scripts/audit.sh /path/to/rails/project
 2. **Runtime scan** (best-effort — runs only if the app boots and its DB is migrated):
    data correctness (`active_record_doctor`) + missing indexes (`lol_dba`), through a
    **temporary** bundle so the project's `Gemfile` is never touched. If the app/DB isn't
-   ready it's skipped automatically and the report's Phase 2 section says how to enable it.
+   ready it's skipped automatically and the report's "Still to run" section says how to enable it.
 
 The result is one file: `<project>/tmp/health-audit/report-<timestamp>/health-audit-report.md`
 (raw tool output alongside it in `report-<timestamp>/raw_original_result/`). Tools fall back
@@ -103,7 +103,7 @@ Write the plan as a **table, in English**, with these columns:
   find the exact file and line the tool reported (brakeman lines look like `File:` + `Line:`).
   Use `<br>` for line breaks inside a cell.
 - **Always cite the raw source** in the Raw column (`raw_original_result/<tool>.txt`).
-- **Cover the runtime rows too** — when Phase 2 ran, the Overview has `active_record_doctor`
+- **Cover the runtime rows too** — when the runtime scan ran, the Overview has `active_record_doctor`
   and `lol_dba` rows; give them Action-plan rows as well (data correctness is 🔴).
 - For a `⚠️ skipped` check, don't drop it — add a row noting it couldn't run (skipped ≠ pass)
   and must be rerun in the project's own environment.

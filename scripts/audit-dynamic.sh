@@ -107,24 +107,19 @@ trap 'cleanup; rm -f "$OVR" "$PH2"' EXIT
 } > "$OVR"
 
 {
-  echo "## 3. Phase 2 — runtime checks (ran against the app + DB)"
+  echo "## 3. Still to run manually"
   echo
-  echo "_Booted the app against its database ($STAMP). Raw output in \`raw_original_result/\`._"
+  echo "Runtime data-correctness & missing-index checks **ran** ($STAMP) and are folded into the"
+  echo "Overview and Action plan above — full per-detector output is in"
+  echo "\`raw_original_result/pass2_ar_doctor.txt\` and \`raw_original_result/pass2_lol_dba.txt\`."
   echo
-  echo "### Data correctness & indexing"
+  echo "Two checks still need the app *exercised* (not just booted), so run them by hand:"
   echo
-  echo "| Detector | Findings |"
-  echo "|----------|----------|"
-  printf '%s' "$AR_ROWS"
-  echo "| lol_dba (missing indexes) | ${LOLDBA} |"
-  echo
-  echo "See \`raw_original_result/pass2_ar_doctor.txt\` and \`raw_original_result/pass2_lol_dba.txt\` for the specific tables/columns."
-  echo
-  echo "### Still manual (need the app exercised, not just booted)"
-  echo
-  echo "- **N+1 queries** — add \`bullet\` (dev/test) or \`prosopite\`, then run the suite or"
-  echo "  click through the app; N+1s only surface on code paths that actually execute."
-  echo "- **Test coverage** — run the suite with \`simplecov\`, read \`coverage/index.html\`."
+  echo "- **N+1 queries** — add \`gem \"bullet\"\` (development/test), enable it in"
+  echo "  \`config/environments/test.rb\`, then run your request/system specs; Bullet logs every N+1."
+  echo "- **Test coverage** — add \`gem \"simplecov\", require: false\` (test), put"
+  echo "  \`require \"simplecov\"; SimpleCov.start \"rails\"\` at the top of your test helper, run the"
+  echo "  suite (\`bin/rails test\` or \`bundle exec rspec\`), then open \`coverage/index.html\`."
 } > "$PH2"
 
 # Replace the RUNTIME_OVERVIEW_ROWS marker with the two rows, and the whole

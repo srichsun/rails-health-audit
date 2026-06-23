@@ -238,8 +238,9 @@ migrate 好；如果 DB 還沒準備好，runtime 階段會被跳過，報告裡
 ```
 
 `health-audit-report.md` 是你拿來讀、拿來行動的那份。它有三節——「## 1. Overview」、
-「## 2. Action plan」、「## 3. Phase 2 — runtime checks」——runtime 結果會併進 Overview
-表格與第三節。每條 Action plan 都標了 `file:line` 跟它來自哪個 `raw_original_result/…txt`，
+「## 2. Action plan」、「## 3. Still to run」——runtime 結果（`active_record_doctor`、
+`lol_dba`）會直接併進 Overview 表格與 Action plan，第三節只列還要手動跑的項目。
+每條 Action plan 都標了 `file:line` 跟它來自哪個 `raw_original_result/…txt`，
 所以每個發現都可以追溯。
 
 想要可分享的檔案？`bash scripts/export.sh <project>` 會把 `health-audit-report.md`
