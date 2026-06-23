@@ -48,48 +48,41 @@ reinvention of those tools.
 
 ## How to run
 
-> **The audit is ALWAYS two steps: run the script, then fill the Action plan.**
-> The script alone only produces a blank template. When this skill runs, you MUST
-> do both steps before reporting back — a scan without a filled Action plan is
-> considered incomplete. The plan is the whole point of this skill.
+> **One command, then fill the Action plan, then export the PDF.** The script alone only
+> produces a blank Action-plan template — filling it is the judgment this skill exists for.
+> A scan handed back without a filled Action plan is incomplete.
 
-### Phase 1 — static scan (works on any project, no app changes)
+The whole audit is **one command**:
 
 ```
-bash ~/.claude/skills/rails-health-audit/scripts/audit-static.sh /path/to/rails/project
+bash ~/.claude/skills/rails-health-audit/scripts/audit.sh /path/to/rails/project
 ```
 
-This runs the tools that need only source + `Gemfile.lock`:
-**security (brakeman, bundler-audit), maintainability (reek/flog/flay), tech-debt
-freshness (bundle outdated)**. Each run writes a ranked report to its own folder,
-`<project>/tmp/health-audit/report-<timestamp>/static-scan-report.md` (raw tool
-output alongside it in `report-<timestamp>/raw/`), and prints a summary.
+`audit.sh` runs both phases into **one report folder**:
 
-Tools are invoked via the installed binary, falling back to `gem exec` (Ruby 3.2+)
-so nothing is permanently added to the target project.
+1. **Static scan** (always runs — only reads source + `Gemfile.lock`):
+   security (brakeman, bundler-audit), compliance (license_finder), performance (fasterer),
+   maintainability (rubycritic, rubocop, erb_lint, rails_best_practices), tech-debt (bundle outdated).
+2. **Runtime scan** (best-effort — runs only if the app boots and its DB is migrated):
+   data correctness (`active_record_doctor`) + missing indexes (`lol_dba`), through a
+   **temporary** bundle so the project's `Gemfile` is never touched. If the app/DB isn't
+   ready it's skipped automatically and the report's Phase 2 section says how to enable it.
 
-**Then immediately do Phase 1b below — don't stop at the raw numbers.**
+The result is one file: `<project>/tmp/health-audit/report-<timestamp>/health-audit-report.md`
+(raw tool output alongside it in `report-<timestamp>/raw_original_result/`). Tools fall back
+to `gem exec` (Ruby 3.2+) so nothing is permanently added to the target project. The N+1
+(`bullet`/`prosopite`) and coverage (`simplecov`) checks need the app *exercised* (requests /
+test suite), so they stay documented follow-ups in the report.
 
-### Phase 2 — runtime scan (needs the app booting + a DB)
+**Then immediately do the next step — don't stop at the raw numbers.**
 
-These need to load the app against its database. `scripts/audit-dynamic.sh <project>` automates
-the first two through a **temporary** bundle (the project's `Gemfile` is never touched):
+### Step 2 — fill the Action plan (REQUIRED, not optional)
 
-- **Data correctness** — `active_record_doctor`: missing FKs, NOT NULL, unique indexes,
-  model/DB mismatch.
-- **Missing indexes** — `lol_dba` (`db:find_indexes`).
-
-Only run `audit-dynamic.sh` when the project's DB is set up and migrated; it writes `dynamic-scan-report.md`.
-The N+1 (`bullet`/`prosopite`) and coverage (`simplecov`) checks need the app *exercised*
-(requests / test suite), so leave them as documented follow-ups.
-
-### Phase 1b — fill the Action plan (REQUIRED, not optional)
-
-`audit-static.sh` only writes an empty Action plan **table**; the prioritization is the
-judgment this skill exists for. **As soon as the scan finishes, read the raw logs in the
-`tmp/health-audit/report-<timestamp>/raw/` folder and fill the `## 2. Action plan` table of
-that run's `report-<timestamp>/static-scan-report.md` with real rows** — then report the
-filled plan to the user. Never hand back the blank template. How to prioritize:
+`audit.sh` only writes an empty Action plan **table**; the prioritization is the judgment
+this skill exists for. **As soon as the scan finishes, read the raw logs in the run's
+`report-<timestamp>/raw_original_result/` folder and fill the `## 2. Action plan` table of
+that run's `health-audit-report.md` with real rows** — then report the filled plan to the
+user. Never hand back the blank template. How to prioritize:
 
 1. **Business impact over volume** — order security → data correctness → performance →
    maintainability → style. A SQL injection outranks 9,000 style offenses.
@@ -106,32 +99,32 @@ Write the plan as a **table, in English**, with these columns:
 
 - **Coverage** — give every 🔴 and 🟡 finding its own row; collapse the ⚪ style-level
   findings (rubocop / erb_lint) into a single row. Don't drop anything important.
-- **Always cite `file:line`** in the Issue cell — open the relevant `report-*/raw/…txt`,
+- **Always cite `file:line`** in the Issue cell — open the relevant `report-*/raw_original_result/…txt`,
   find the exact file and line the tool reported (brakeman lines look like `File:` + `Line:`).
   Use `<br>` for line breaks inside a cell.
-- **Always cite the raw source** in the Raw column (`<raw-folder>/<tool>.txt`).
+- **Always cite the raw source** in the Raw column (`raw_original_result/<tool>.txt`).
+- **Cover the runtime rows too** — when Phase 2 ran, the Overview has `active_record_doctor`
+  and `lol_dba` rows; give them Action-plan rows as well (data correctness is 🔴).
 - For a `⚠️ skipped` check, don't drop it — add a row noting it couldn't run (skipped ≠ pass)
   and must be rerun in the project's own environment.
 
 Keep it focused — every 🔴/🟡 plus one ⚪ row, ordered most-severe-first. See
 `examples/example-unhealthy-project/` (a real, bundle-installable Rails 8 app full of
-intentional issues) for a worked example — its filled report is under
-`tmp/health-audit/report-*/static-scan-report.md`.
+intentional issues) for a worked example — its exported report is at
+`tmp/health-audit/report-*/health-audit-report.pdf`.
 
-### Phase 1c — export the report (do this once the Action plan is filled)
+### Step 3 — export the PDF (do this once the Action plan is filled)
 
-Once the table is filled, produce the shareable copies so the deliverable is ready to
-hand over. The default ships all three side by side — the source `.md` plus rendered
-`.html` and `.pdf`:
+Once the table is filled, produce the shareable PDF (the default, and the only output —
+the `.md` stays as the editable source):
 
 ```
 bash ~/.claude/skills/rails-health-audit/scripts/export.sh <project>
 ```
 
-This renders the latest (now-filled) report next to it inside its
-`tmp/health-audit/report-<timestamp>/` folder (`static-scan-report.md` / `.html` / `.pdf`).
-Do this **after** filling the Action plan, never before — a PDF of the blank template is
-worthless. Tell the user where the files are.
+This renders the latest (now-filled) report to `health-audit-report.pdf` inside its
+`tmp/health-audit/report-<timestamp>/` folder. Do this **after** filling the Action plan,
+never before — a PDF of the blank template is worthless. Tell the user where the PDF is.
 
 ## Notes
 

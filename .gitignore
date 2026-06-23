@@ -8,3 +8,6 @@ examples/**/tmp/
 # Example app build artifacts (the schema is committed; the built DB and logs are not)
 examples/**/log/
 examples/**/storage/
+
+# macOS
+.DS_Store

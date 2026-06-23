@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Rails Health Audit — optional export of the markdown report to HTML / PDF.
-# Usage: bash export.sh /path/to/rails/project [html|pdf|both]   (default: both)
-# Default ships all three side by side: the source .md plus rendered .html and .pdf.
+# Usage: bash export.sh /path/to/rails/project [pdf|html|both]   (default: pdf)
+# Default produces just the PDF deliverable (the .md stays as the editable source).
 #
 # Markdown stays the source of truth (editable, diffable, zero-dependency). This is just
 # a polished, shareable rendering on top:
@@ -11,7 +11,7 @@ set -uo pipefail
 
 PROJECT="${1:-$PWD}"
 PROJECT="$(cd "$PROJECT" 2>/dev/null && pwd)" || { echo "No such directory: ${1:-}"; exit 1; }
-FORMAT="${2:-both}"
+FORMAT="${2:-pdf}"
 
 OUT="$PROJECT/tmp/health-audit"
 [[ -d "$OUT" ]] || { echo "No report found at $OUT — run audit-static.sh first."; exit 1; }
@@ -80,18 +80,19 @@ html_to_pdf() { # <html-file> <pdf-file>
   [[ -f "$pdf" ]] && echo "  ✓ $pdf" || echo "  ✗ PDF render failed for $html"
 }
 
-echo "Exporting reports in $OUT (format: $FORMAT)"
-# Export the latest static + dynamic reports (filenames carry a timestamp).
-latest_static="$(ls -t "$OUT"/report-*/static-scan-report.md 2>/dev/null | head -1)"
-latest_dynamic="$(ls -t "$OUT"/report-*/dynamic-scan-report.md 2>/dev/null | head -1)"
-exported=0
-for md in "$latest_static" "$latest_dynamic"; do
-  [[ -n "$md" && -f "$md" ]] || continue
-  base="${md%.md}"
-  title="Rails Health Audit — $(basename "$base")"
-  md_to_html "$md" "$base.html" "$title" || continue
-  [[ "$FORMAT" == "pdf" || "$FORMAT" == "both" ]] && html_to_pdf "$base.html" "$base.pdf"
-  exported=1
-done
-[[ "$exported" == "0" ]] && echo "  No reports found in $OUT — run audit-static.sh first."
+echo "Exporting report in $OUT (format: $FORMAT)"
+# One combined report per run folder (static + runtime merged).
+md="$(ls -t "$OUT"/report-*/health-audit-report.md 2>/dev/null | head -1)"
+if [[ -z "$md" || ! -f "$md" ]]; then
+  echo "  No report found in $OUT — run audit.sh first."; echo "Done."; exit 0
+fi
+base="${md%.md}"
+title="Rails Health Audit — $(basename "$(dirname "$md")")"
+md_to_html "$md" "$base.html" "$title" || { echo "Done."; exit 1; }
+[[ "$FORMAT" == "pdf" || "$FORMAT" == "both" ]] && html_to_pdf "$base.html" "$base.pdf"
+# PDF-only is the default deliverable: drop the intermediate .html (and the .md is the
+# editable source, kept only if the user asked for html/both).
+if [[ "$FORMAT" == "pdf" ]]; then
+  rm -f "$base.html"
+fi
 echo "Done."

@@ -41,7 +41,7 @@ ApplicationRecord:
 
 Owner:
   Rating:       A
-  Churn:        0
+  Churn:        1
   Complexity:   0.0
   Duplication:  0
   Smells:       1
@@ -50,7 +50,7 @@ Owner:
 
 Product:
   Rating:       A
-  Churn:        1
+  Churn:        2
   Complexity:   30.72
   Duplication:  0
   Smells:       5
@@ -92,7 +92,7 @@ Report:
 
 Tag:
   Rating:       A
-  Churn:        0
+  Churn:        1
   Complexity:   0.0
   Duplication:  0
   Smells:       1

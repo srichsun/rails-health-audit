@@ -189,27 +189,26 @@ git clone https://github.com/srichsun/rails-health-audit
 /rails-health-audit /path/to/rails/project
 ```
 
-**獨立使用——靜態掃描。** 直接跑（不需要 Claude Code）：
+**獨立使用——一道指令。** 直接跑（不需要 Claude Code）：
 
 ```sh
-bash scripts/audit-static.sh /path/to/rails/project
+bash scripts/audit.sh /path/to/rails/project
 ```
 
-不管哪種方式，它都會把排序後的報告寫到 `<project>/tmp/health-audit/static-scan-report.md`，
-並把每個工具的完整原始輸出寫到 `<project>/tmp/health-audit/raw/`。摘要會印在終端機。
+`audit.sh` 會先跑靜態掃描，接著盡力（best-effort）跑 runtime 掃描——只有在 app 能開機、
+而且資料庫已 migrate 時才跑；否則 runtime 階段會自動跳過，報告裡也會說明怎麼啟用它。
+（它內部會呼叫 `audit-static.sh` 與 `audit-dynamic.sh`，但你要跑的指令是 `audit.sh`。）
+
+不管哪種方式，它都會把排序後的單一報告寫到
+`<project>/tmp/health-audit/report-<timestamp>/health-audit-report.md`，並把每個工具的
+完整原始輸出寫到該次的 `raw_original_result/`。摘要會印在終端機。
 
 接著排優先序（triage）：讀那些 raw log、挑出影響最大的前幾項，把報告裡的
 **Action plan** 區塊填好——每行一條：`[類別] 問題 → 修法 → 工時`。
 （在 Claude Code 裡，這個排優先序的步驟可以直接從 raw log 幫你完成。）
 
-**動態掃描（第二輪）。** 對一個資料庫已設定、已 migrate 的專案：
-
-```sh
-bash scripts/audit-dynamic.sh /path/to/rails/project
-```
-
-它會啟動 app、用暫時的 bundle 跑資料正確性與索引偵測器（你的 `Gemfile` 不會被動），
-並寫出 `<project>/tmp/health-audit/dynamic-scan-report.md`。
+想把 runtime（第二輪）結果一起併進報告，請在跑 `audit.sh` 前先把專案的資料庫設定好、
+migrate 好；如果 DB 還沒準備好，runtime 階段會被跳過，報告裡只會有靜態結果。
 
 ---
 
@@ -224,8 +223,8 @@ bash scripts/audit-dynamic.sh /path/to/rails/project
 ```
 <project>/tmp/health-audit/
 └── report-<timestamp>/                  # 一次跑一個資料夾
-    ├── static-scan-report.md            # 總覽（所有檢查）+ 排好序的 Action plan
-    ├── dynamic-scan-report.md           # 動態掃描結果（只有跑過 audit-dynamic.sh 才有）
+    ├── health-audit-report.md           # 工作來源：總覽 + Action plan + 第三節 runtime 檢查
+    ├── health-audit-report.pdf           # 可分享的成品（由 export.sh 產生）
     └── raw_original_result/             # 每個工具的完整原始輸出
         ├── brakeman.txt
         ├── bundler-audit.txt
@@ -238,11 +237,13 @@ bash scripts/audit-dynamic.sh /path/to/rails/project
         └── outdated.txt
 ```
 
-`static-scan-report.md` 是你拿來讀、拿來行動的那份；每條 Action plan 都標了
-`file:line` 跟它來自哪個 `raw_original_result/…txt`，所以每個發現都可以追溯。
+`health-audit-report.md` 是你拿來讀、拿來行動的那份。它有三節——「## 1. Overview」、
+「## 2. Action plan」、「## 3. Phase 2 — runtime checks」——runtime 結果會併進 Overview
+表格與第三節。每條 Action plan 都標了 `file:line` 跟它來自哪個 `raw_original_result/…txt`，
+所以每個發現都可以追溯。
 
-想要可分享的檔案？`bash scripts/export.sh <project> both` 會把 `static-scan-report.md` / `dynamic-scan-report.md`
-轉成 HTML + PDF（選用——markdown 仍是來源）。
+想要可分享的檔案？`bash scripts/export.sh <project>` 會把 `health-audit-report.md`
+轉成 `health-audit-report.pdf`（`.md` 仍是可編輯的來源）。
 
 ---
 
@@ -253,15 +254,15 @@ repo 內附一個**真的、故意寫壞**的 Rails 8 app（`example-unhealthy-p
 不會出現「skipped」。把 audit 指過去：
 
 ```sh
-bash scripts/audit-static.sh examples/example-unhealthy-project
-cat examples/example-unhealthy-project/tmp/health-audit/report-*/static-scan-report.md
+bash scripts/audit.sh examples/example-unhealthy-project
+open examples/example-unhealthy-project/tmp/health-audit/report-*/health-audit-report.pdf
 ```
 
 範例裡植入了哪些問題，見
 [`examples/example-unhealthy-project/README.md`](examples/example-unhealthy-project/README.md)；
 或者不用跑，直接看已提交的輸出快照
 [`examples/example-unhealthy-project/tmp/health-audit/`](examples/example-unhealthy-project/tmp/health-audit/)
-（一份 Action plan 已填好的 `report-<timestamp>/static-scan-report.md`）。
+（一份 Action plan 已填好的 `report-<timestamp>/health-audit-report.pdf`）。
 
 一份真實案例的完整解說（一個 legacy Rails 4.1 app）在
 [`docs/case-study-legacy-rails.zh-TW.md`](docs/case-study-legacy-rails.zh-TW.md)。

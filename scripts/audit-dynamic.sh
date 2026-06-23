@@ -19,13 +19,16 @@ if [[ ! -f "$PROJECT/Gemfile" || ! -f "$PROJECT/config/application.rb" ]]; then
   echo "Not a Rails project: $PROJECT"; exit 1
 fi
 
-TS="$(date '+%Y%m%d-%H%M%S')"          # timestamp for this run's folder
 STAMP="$(date '+%Y-%m-%d %H:%M')"      # human-readable, shown inside the report
-# Each run gets its own report-<timestamp>/ folder (same layout as the static scan).
-RUN="$PROJECT/tmp/health-audit/report-$TS"
+# Append into the most recent static report folder, so static + runtime are ONE report.
+OUT="$PROJECT/tmp/health-audit"
+RUN="$(ls -dt "$OUT"/report-* 2>/dev/null | head -1)"
+if [[ -z "$RUN" || ! -f "$RUN/health-audit-report.md" ]]; then
+  echo "  ✗ no static report found — run audit-static.sh first."; exit 1
+fi
 RAW="$RUN/raw_original_result"
 mkdir -p "$RAW"
-PASS2="$RUN/dynamic-scan-report.md"
+REPORT="$RUN/health-audit-report.md"
 
 echo "Rails Health Audit — Pass 2 (runtime) → $PROJECT"
 
@@ -71,6 +74,7 @@ DETECTORS=(
 echo "[1/2] active_record_doctor (data correctness + indexing)"
 : > "$RAW/pass2_ar_doctor.txt"
 AR_ROWS=""   # report table rows (Bash 3.2 has no associative arrays)
+AR_TOTAL=0   # total active_record_doctor findings, for the Overview row
 for det in "${DETECTORS[@]}"; do
   raw_out=$(run_rake "active_record_doctor:$det")
   if printf '%s' "$raw_out" | grep -qiE 'StatementInvalid|rake aborted|does not exist'; then
@@ -80,6 +84,7 @@ for det in "${DETECTORS[@]}"; do
   else
     body=$(printf '%s\n' "$raw_out" | clean)
     n=$(printf '%s\n' "$body" | grep -cve '^$')
+    AR_TOTAL=$(( AR_TOTAL + n ))
   fi
   AR_ROWS="${AR_ROWS}| ${det} | ${n} |"$'\n'
   { echo "### $det ($n)"; printf '%s\n' "$body"; echo; } >> "$RAW/pass2_ar_doctor.txt"
@@ -91,13 +96,22 @@ run_rake db:find_indexes | clean > "$RAW/pass2_lol_dba.txt"
 LOLDBA=$(grep -cE '^\s*add_index' "$RAW/pass2_lol_dba.txt")
 echo "  lol_dba: ${LOLDBA} missing index(es) suggested"
 
-# --- report ---
+# --- splice the runtime results into the ONE health report (static + runtime) ---
+OVR="$(mktemp /tmp/rha_ovr.XXXXXX)"   # the two Overview rows to add
+PH2="$(mktemp /tmp/rha_ph2.XXXXXX)"   # the filled Phase 2 section
+trap 'cleanup; rm -f "$OVR" "$PH2"' EXIT
+
 {
-  echo "# Rails Health Audit — Pass 2 (runtime) — $(basename "$PROJECT")"
+  echo "| 🔴 2 | Data correctness | active_record_doctor | ${AR_TOTAL} issue(s) | \`raw_original_result/pass2_ar_doctor.txt\` |"
+  echo "| 🟡 3 | Performance | lol_dba | ${LOLDBA} missing index(es) | \`raw_original_result/pass2_lol_dba.txt\` |"
+} > "$OVR"
+
+{
+  echo "## 3. Phase 2 — runtime checks (ran against the app + DB)"
   echo
-  echo "_Generated $STAMP. Booted the app against its database. Raw output in \`raw_original_result/\`._"
+  echo "_Booted the app against its database ($STAMP). Raw output in \`raw_original_result/\`._"
   echo
-  echo "## Data correctness & indexing (active_record_doctor)"
+  echo "### Data correctness & indexing"
   echo
   echo "| Detector | Findings |"
   echo "|----------|----------|"
@@ -106,12 +120,22 @@ echo "  lol_dba: ${LOLDBA} missing index(es) suggested"
   echo
   echo "See \`raw_original_result/pass2_ar_doctor.txt\` and \`raw_original_result/pass2_lol_dba.txt\` for the specific tables/columns."
   echo
-  echo "## Still manual (need the app exercised, not just booted)"
+  echo "### Still manual (need the app exercised, not just booted)"
   echo
   echo "- **N+1 queries** — add \`bullet\` (dev/test) or \`prosopite\`, then run the suite or"
   echo "  click through the app; N+1s only surface on code paths that actually execute."
   echo "- **Test coverage** — run the suite with \`simplecov\`, read \`coverage/index.html\`."
-} > "$PASS2"
+} > "$PH2"
+
+# Replace the RUNTIME_OVERVIEW_ROWS marker with the two rows, and the whole
+# PHASE2_START..PHASE2_END placeholder block with the filled section.
+awk -v ovr="$OVR" -v ph2="$PH2" '
+  /<!-- RUNTIME_OVERVIEW_ROWS -->/ { while ((getline l < ovr) > 0) print l; next }
+  /<!-- PHASE2_START -->/ { while ((getline l < ph2) > 0) print l; skip=1; next }
+  /<!-- PHASE2_END -->/   { skip=0; next }
+  skip { next }
+  { print }
+' "$REPORT" > "$REPORT.tmp" && mv "$REPORT.tmp" "$REPORT"
 
 echo
-echo "Done. Pass 2 report → $PASS2"
+echo "Done. Runtime results merged into → $REPORT"

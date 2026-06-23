@@ -19,7 +19,7 @@ STAMP="$(date '+%Y-%m-%d %H:%M')"      # human-readable, shown inside the report
 RUN="$PROJECT/tmp/health-audit/report-$TS"
 RAW="$RUN/raw_original_result"
 mkdir -p "$RAW"
-REPORT="$RUN/static-scan-report.md"
+REPORT="$RUN/health-audit-report.md"
 RAW_REL="raw_original_result"          # relative path used in links inside the report
 
 echo "Rails Health Audit → $PROJECT"
@@ -141,7 +141,7 @@ echo "[7/7] Writing report"
 {
   echo "# Rails Health Audit — $(basename "$PROJECT")"
   echo
-  echo "_Generated $STAMP. Phase 1 (static scan). Full raw tool output is in \`$RAW_REL/\`._"
+  echo "_Generated $STAMP. Static scan + (best-effort) runtime checks. Full raw tool output is in \`$RAW_REL/\`._"
   echo
   echo "## 1. Overview (every check, most severe first)"
   echo
@@ -156,6 +156,7 @@ echo "[7/7] Writing report"
   echo "| ⚪ 4 | Maintainability | rubocop | ${RUBOCOP} offense(s) | \`$RAW_REL/rubocop.txt\` |"
   echo "| ⚪ 4 | Maintainability | erb_lint | ${ERBLINT} ERB offense(s) | \`$RAW_REL/erb_lint.txt\` |"
   echo "| ⚪ 5 | Tech debt | bundle outdated | ${OUTDATED} | \`$RAW_REL/outdated.txt\` |"
+  echo "<!-- RUNTIME_OVERVIEW_ROWS -->"
   echo
   echo "Legend — 🔴 must fix (security / data) · 🟡 should fix (correctness / maintainability) · ⚪ nice to have (style / freshness)."
   echo
@@ -183,14 +184,17 @@ echo "[7/7] Writing report"
   echo "| 2 | 🟡 | … | … | S/M/L | \`$RAW_REL/…txt\` |"
   echo "| 3 | ⚪ | … | … | S/M/L | \`$RAW_REL/…txt\` |"
   echo
+  echo "<!-- PHASE2_START -->"
   echo "## 3. Phase 2 — runtime checks (follow-up, need app + DB)"
   echo
-  echo "These can't be answered by reading code; run them in the project (see audit-dynamic.sh):"
+  echo "Not run yet. These can't be answered by reading code; run \`audit-dynamic.sh\` against"
+  echo "the project (booted, DB migrated) and this section is filled in automatically:"
   echo
   echo "- **Data correctness** — \`active_record_doctor\` (missing FKs, NOT NULL, unique indexes, model/DB mismatch)"
   echo "- **Missing indexes** — \`lol_dba\` (\`db:find_indexes\`)"
   echo "- **N+1 queries** — \`bullet\` (dev/test) or \`prosopite\`; exercise app / run tests"
   echo "- **Test coverage** — \`simplecov\` → run the suite, read \`coverage/index.html\`"
+  echo "<!-- PHASE2_END -->"
 } > "$REPORT"
 
 echo

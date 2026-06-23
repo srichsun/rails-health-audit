@@ -201,28 +201,29 @@ Or invoke it explicitly as a slash command:
 /rails-health-audit /path/to/rails/project
 ```
 
-**Standalone — the static scan.** Run it directly (no Claude Code needed):
+**Standalone — one command.** Run it directly (no Claude Code needed):
 
 ```sh
-bash scripts/audit-static.sh /path/to/rails/project
+bash scripts/audit.sh /path/to/rails/project
 ```
 
-Either way, it writes a ranked report to `<project>/tmp/health-audit/static-scan-report.md` and the
-full, unprocessed tool output to `<project>/tmp/health-audit/raw/`. The summary is
-printed to the terminal.
+`audit.sh` runs the static scan, then best-effort runs the runtime scan — only if the app
+boots and its database is migrated; otherwise the runtime phase is skipped automatically
+and the report explains how to enable it. (Internally it calls `audit-static.sh` and
+`audit-dynamic.sh`, but the command you run is `audit.sh`.)
+
+Either way, it writes a single ranked report to
+`<project>/tmp/health-audit/report-<timestamp>/health-audit-report.md` and the full,
+unprocessed tool output to that run's `raw_original_result/`. The summary is printed to
+the terminal.
 
 Then triage: read the raw logs, pick the top handful of highest-impact items, and fill
 in the report's **Action plan** section — one line each: `[Category] problem → fix →
 effort`. (Inside Claude Code this triage step can be done for you from the raw logs.)
 
-**The dynamic scan (Pass 2).** On a project whose database is set up and migrated:
-
-```sh
-bash scripts/audit-dynamic.sh /path/to/rails/project
-```
-
-It boots the app, runs the data-correctness and indexing detectors through a temporary
-bundle (your `Gemfile` is untouched), and writes `<project>/tmp/health-audit/dynamic-scan-report.md`.
+To get the runtime (Pass 2) results folded in, make sure the project's database is set up
+and migrated before you run `audit.sh`; on a project whose DB isn't ready, the runtime
+phase is skipped and only the static results appear.
 
 ---
 
@@ -237,8 +238,8 @@ overwrites an older one — keep them to diff before/after.
 ```
 <project>/tmp/health-audit/
 └── report-<timestamp>/                  # one folder per run
-    ├── static-scan-report.md            # overview (all checks) + prioritized Action plan
-    ├── dynamic-scan-report.md           # dynamic scan results (only if you ran audit-dynamic.sh)
+    ├── health-audit-report.md           # working source: Overview + Action plan + Phase 2 runtime checks
+    ├── health-audit-report.pdf           # the shareable deliverable (from export.sh)
     └── raw_original_result/             # full, unprocessed output from every tool
         ├── brakeman.txt
         ├── bundler-audit.txt
@@ -251,11 +252,13 @@ overwrites an older one — keep them to diff before/after.
         └── outdated.txt
 ```
 
-The `static-scan-report.md` is the one you read and act on; each Action plan item cites
+The `health-audit-report.md` is the one you read and act on. It has three sections —
+"## 1. Overview", "## 2. Action plan", and "## 3. Phase 2 — runtime checks" — with the
+runtime results folded into the Overview table and section 3. Each Action plan item cites
 the `file:line` and the `raw_original_result/…txt` it came from, so findings are traceable.
 
-Want a shareable copy? `bash scripts/export.sh <project> both` renders `static-scan-report.md` /
-`dynamic-scan-report.md` to HTML + PDF (optional — markdown stays the source of truth).
+Want a shareable copy? `bash scripts/export.sh <project>` renders `health-audit-report.md`
+to `health-audit-report.pdf` (the `.md` stays the editable source of truth).
 
 ---
 
@@ -266,14 +269,14 @@ that actually `bundle install`s — so every tool (including license_finder and 
 outdated) produces a real finding, not a "skipped". Point the audit at it:
 
 ```sh
-bash scripts/audit-static.sh examples/example-unhealthy-project
-cat examples/example-unhealthy-project/tmp/health-audit/report-*/static-scan-report.md
+bash scripts/audit.sh examples/example-unhealthy-project
+open examples/example-unhealthy-project/tmp/health-audit/report-*/health-audit-report.pdf
 ```
 
 See [`examples/example-unhealthy-project/README.md`](examples/example-unhealthy-project/README.md)
 for the list of problems planted in it, or read the committed output snapshot under
 [`examples/example-unhealthy-project/tmp/health-audit/`](examples/example-unhealthy-project/tmp/health-audit/)
-(a `report-<timestamp>/static-scan-report.md` with the Action plan already filled) without
+(a `report-<timestamp>/health-audit-report.pdf` with the Action plan already filled) without
 running anything.
 
 A real-world walkthrough (a legacy Rails 4.1 app) is in

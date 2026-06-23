@@ -11,11 +11,13 @@ project's own Ruby — they would otherwise show "skipped").
 ## Run the audit on it
 
 ```sh
-bash ../../scripts/audit-static.sh .
-cat tmp/health-audit/report-*/static-scan-report.md
+bash ../../scripts/audit.sh .
+open tmp/health-audit/report-*/health-audit-report.pdf
 ```
 
-A committed sample run already lives in `tmp/health-audit/report-*/` with the Action plan
+`audit.sh` runs the static scan and then best-effort runs the runtime scan, producing one
+combined `health-audit-report.md` (and, after export, `health-audit-report.pdf`). A
+committed sample run already lives in `tmp/health-audit/report-*/` with the Action plan
 filled in, so you can see the deliverable without running anything.
 
 ## Problems planted in it (and which tool catches each)
@@ -40,11 +42,12 @@ filled in, so you can see the deliverable without running anything.
 ## Runtime (Phase 2) — the DB is intentionally broken too
 
 The schema (`db/migrate/`, `db/schema.rb`) is planted with data-integrity problems so the
-runtime scan also lights up. Set up the DB and run Phase 2:
+runtime scan also lights up. `audit.sh` runs Phase 2 automatically, but it can only do so
+once the database exists — so set up the DB first, then run the audit:
 
 ```sh
 bin/rails db:prepare
-bash ../../scripts/audit-dynamic.sh .
+bash ../../scripts/audit.sh .
 ```
 
 | Where | Problem | Caught by |
@@ -54,7 +57,8 @@ bash ../../scripts/audit-dynamic.sh .
 | `products.name` (presence-validated), `tags.product_id` | nullable column the model treats as required | active_record_doctor (missing_non_null_constraint) |
 | `products.sku` (uniqueness-validated) | no unique index backing the validation | active_record_doctor (missing_unique_indexes) |
 
-A committed sample of the runtime report is in `tmp/health-audit/report-*/dynamic-scan-report.md`.
+A committed sample of the report (runtime results folded into section 3) is in
+`tmp/health-audit/report-*/health-audit-report.pdf`.
 
 ## Why a real app instead of a skeleton
 
