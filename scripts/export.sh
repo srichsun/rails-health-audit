@@ -76,7 +76,7 @@ html_to_pdf() { # <html-file> <pdf-file>
 }
 
 echo "Exporting reports in $OUT (format: $FORMAT)"
-for md in "$OUT/REPORT.md" "$OUT/PASS2.md"; do
+for md in "$OUT/static-scan-report.md" "$OUT/dynamic-scan-report.md"; do
   [[ -f "$md" ]] || continue
   base="${md%.md}"
   title="Rails Health Audit — $(basename "$base")"

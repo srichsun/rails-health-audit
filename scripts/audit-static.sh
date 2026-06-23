@@ -2,7 +2,7 @@
 # Rails Health Audit — Phase 1 static scan.
 # Usage: bash audit-static.sh /path/to/rails/project
 # Orchestrates the canonical Ruby/Rails static-analysis tools, ranks findings
-# most-severe-first, and writes <project>/tmp/health-audit/REPORT.md.
+# most-severe-first, and writes <project>/tmp/health-audit/static-scan-report.md.
 set -uo pipefail
 
 PROJECT="${1:-$PWD}"
@@ -16,7 +16,7 @@ fi
 OUT="$PROJECT/tmp/health-audit"
 RAW="$OUT/raw"
 mkdir -p "$RAW"
-REPORT="$OUT/REPORT.md"
+REPORT="$OUT/static-scan-report.md"
 STAMP="$(date '+%Y-%m-%d %H:%M')"
 
 echo "Rails Health Audit → $PROJECT"

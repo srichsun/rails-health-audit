@@ -50,7 +50,7 @@ bash ~/.claude/skills/rails-health-audit/scripts/audit-static.sh /path/to/rails/
 This runs the tools that need only source + `Gemfile.lock`:
 **security (brakeman, bundler-audit), maintainability (reek/flog/flay), tech-debt
 freshness (bundle outdated)**. It writes a ranked report to
-`<project>/tmp/health-audit/REPORT.md` and prints a summary.
+`<project>/tmp/health-audit/static-scan-report.md` and prints a summary.
 
 Tools are invoked via the installed binary, falling back to `gem exec` (Ruby 3.2+)
 so nothing is permanently added to the target project.
@@ -64,7 +64,7 @@ the first two through a **temporary** bundle (the project's `Gemfile` is never t
   model/DB mismatch.
 - **Missing indexes** — `lol_dba` (`db:find_indexes`).
 
-Only run `audit-dynamic.sh` when the project's DB is set up and migrated; it writes `PASS2.md`.
+Only run `audit-dynamic.sh` when the project's DB is set up and migrated; it writes `dynamic-scan-report.md`.
 The N+1 (`bullet`/`prosopite`) and coverage (`simplecov`) checks need the app *exercised*
 (requests / test suite), so leave them as documented follow-ups.
 
@@ -72,7 +72,7 @@ The N+1 (`bullet`/`prosopite`) and coverage (`simplecov`) checks need the app *e
 
 `audit-static.sh` only writes an empty Action plan template; the prioritization is the judgment
 this skill exists for. **After running the scan, read the raw logs in
-`tmp/health-audit/raw/` and fill in the `## Action plan` section of `REPORT.md`** before
+`tmp/health-audit/raw/` and fill in the `## Action plan` section of `static-scan-report.md`** before
 reporting back. How to prioritize:
 
 1. **Business impact over volume** — order security → data correctness → performance →
@@ -86,7 +86,7 @@ reporting back. How to prioritize:
 
 Write each item as **[Category] problem (found by tool) → concrete fix → rough effort
 (S/M/L)**. Keep it to the top ~6–10 so it is actionable, not a dump. See
-`examples/legacy_blog/SAMPLE_REPORT.md` for a worked example.
+`examples/legacy_blog/SAMPLE_static-scan-report.md` for a worked example.
 
 ## Notes
 

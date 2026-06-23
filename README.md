@@ -207,7 +207,7 @@ Or invoke it explicitly as a slash command:
 bash scripts/audit-static.sh /path/to/rails/project
 ```
 
-Either way, it writes a ranked report to `<project>/tmp/health-audit/REPORT.md` and the
+Either way, it writes a ranked report to `<project>/tmp/health-audit/static-scan-report.md` and the
 full, unprocessed tool output to `<project>/tmp/health-audit/raw/`. The summary is
 printed to the terminal.
 
@@ -222,7 +222,7 @@ bash scripts/audit-dynamic.sh /path/to/rails/project
 ```
 
 It boots the app, runs the data-correctness and indexing detectors through a temporary
-bundle (your `Gemfile` is untouched), and writes `<project>/tmp/health-audit/PASS2.md`.
+bundle (your `Gemfile` is untouched), and writes `<project>/tmp/health-audit/dynamic-scan-report.md`.
 
 ---
 
@@ -233,8 +233,8 @@ scripts also print the report path to the terminal when they finish.
 
 ```
 <project>/tmp/health-audit/
-├── REPORT.md      # static scan: summary table + the prioritized Action plan
-├── PASS2.md       # dynamic scan results (only if you ran audit-dynamic.sh)
+├── static-scan-report.md      # static scan: summary table + the prioritized Action plan
+├── dynamic-scan-report.md       # dynamic scan results (only if you ran audit-dynamic.sh)
 └── raw/           # full, unprocessed output from every tool — the detail you triage from
     ├── brakeman.txt
     ├── bundler-audit.txt
@@ -248,10 +248,10 @@ scripts also print the report path to the terminal when they finish.
     └── pass2_lol_dba.txt       # from audit-dynamic.sh
 ```
 
-`REPORT.md` is the one you read and act on; `raw/` is where the specifics live.
+`static-scan-report.md` is the one you read and act on; `raw/` is where the specifics live.
 
-Want a shareable copy? `bash scripts/export.sh <project> both` renders `REPORT.md` /
-`PASS2.md` to HTML + PDF (optional — markdown stays the source of truth).
+Want a shareable copy? `bash scripts/export.sh <project> both` renders `static-scan-report.md` /
+`dynamic-scan-report.md` to HTML + PDF (optional — markdown stays the source of truth).
 
 ---
 
@@ -262,12 +262,12 @@ audit light up without pointing it at your own code:
 
 ```sh
 bash scripts/audit-static.sh examples/legacy_blog
-cat examples/legacy_blog/tmp/health-audit/REPORT.md
+cat examples/legacy_blog/tmp/health-audit/static-scan-report.md
 ```
 
 See [`examples/legacy_blog/README.md`](examples/legacy_blog/README.md) for the list of
 problems planted in it, or read the committed output snapshot at
-[`examples/legacy_blog/SAMPLE_REPORT.md`](examples/legacy_blog/SAMPLE_REPORT.md) without
+[`examples/legacy_blog/sample-static-scan-report.md`](examples/legacy_blog/sample-static-scan-report.md) without
 running anything.
 
 A real-world walkthrough (a legacy Rails 4.1 app) is in

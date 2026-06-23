@@ -21,7 +21,7 @@ fi
 
 OUT="$PROJECT/tmp/health-audit"; RAW="$OUT/raw"
 mkdir -p "$RAW"
-PASS2="$OUT/PASS2.md"
+PASS2="$OUT/dynamic-scan-report.md"
 STAMP="$(date '+%Y-%m-%d %H:%M')"
 
 echo "Rails Health Audit — Pass 2 (runtime) → $PROJECT"

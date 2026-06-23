@@ -26,5 +26,5 @@ Run the audit against it:
 
 ```sh
 bash ../../scripts/audit-static.sh .
-cat tmp/health-audit/REPORT.md
+cat tmp/health-audit/static-scan-report.md
 ```
